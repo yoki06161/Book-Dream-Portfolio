@@ -1,0 +1,37 @@
+<html layout:decorate="~{admin_layout}">
+	<head>
+		<title>관리자 로그인</title>
+	</head>
+	<nav type="hidden"></nav>
+	<div layout:fragment="content" class="position-absolute top-50 start-50 translate-middle">
+		<div style="width: 350px;" class="card mx-auto me-auto">
+			<div class="card-header">
+				<h5 class="text-center fw-bold text-secondary"> 북드림 관리자페이지 로그인</h5>
+			</div>
+			<div class="card-body">
+				<form th:action="@{|/admin/login|}" method="post">
+	
+					<div th:if="${param.error}" style="padding-left: 5px;">
+						<small style="color: #DF0101; font-weight: 700;">이메일,
+							비밀번호를 확인해주세요.</small>
+					</div>
+	
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item">
+							<input type="text" name="username"
+								placeholder="관리자 이메일을 입력해주세요" class="form-control" required="required">
+						</li>
+						<li class="list-group-item">
+							<input type="password" name="password" 
+								placeholder="관리자 비밀번호를 입력해주세요" class="form-control" required="required">
+						</li>
+						<li class="list-group-item">
+							<input type="submit" value="관리자 로그인" class="btn btn-secondary fw-bold" style="width: 284.4px;">
+						</li>
+					</ul>
+				</form>
+			</div>
+		</div>
+	</div>
+	</html>
+</html>

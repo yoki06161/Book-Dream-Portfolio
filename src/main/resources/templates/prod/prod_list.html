@@ -1,0 +1,126 @@
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+	<title>상품페이지</title>
+	<link rel="stylesheet" th:href="@{/css/prod.css}" type="text/css">
+	<body>
+	<div class="b_inner">
+		<div class="l_genre_wrap">
+			<a th:href="@{|/prod|}" class="all">모두 보기</a><br>
+			<a th:href="@{|/prod?genre=베스트셀러|}" class="bestseller">베스트 셀러</a><br>
+			<a th:href="@{|/prod?genre=소설|}" class="novel">소설</a><br>
+			<a th:href="@{|/prod?genre=시/에세이|}" class="poety">시/에세이</a><br>
+			<a th:href="@{|/prod?genre=인문학|}" class="humanities">인문학</a> <br>
+			<a th:href="@{|/prod?genre=역사/문화|}" class="history">역사/문화</a><br>
+		</div>
+		<!--
+		<div th:if="${C_Books != null}" th:text="|${#lists.size(C_Books.book_title)}개의 책|"></div>
+		<div th:if="${C_Books == null}" th:text="|0개의 책|"></div>
+		-->
+		<!--검색-->
+		<div class="search_wrap">
+		    <input type="text" id="search_kw" th:value="${kw}" placeholder="제목 또는 작가명으로 검색" class="search_bar">
+		    <button id="search_btn" class="s_btn"></button>
+		</div>
+		<form th:action="@{|/prod|}" method="get" id="searchForm">
+	        <input type="hidden" id="send_genre" name="genre" th:value="${b_genre}">
+	        <input type="hidden" id="send_kw" name="kw" th:value="${kw}">
+	    </form>
+		<!--b_list는 여기서 새로 만든 리스트. C_books의 리스트를 참조하겠단뜻-->
+		<!--each는 반복. for문이랑 같음. 그안에 있는것들을 반복하겠다.-->
+		<div th:each = "b_list : ${C_Books}" th:if="${b_genre == b_list.book_genre}" class="wrap_gen">
+			<div class="flex_wrap">
+				<!--|prod/다음부턴 controller에서 map으로 잡아줘야한다.-->
+				<a th:href="@{|prod/detail/${b_list.book_id}|}">
+					<!--Crawling에서 builder로 정한 변수?명-->
+					<div class="img_wrap">
+						<img th:src = "${b_list.book_img}"/>
+					</div>
+				</a>
+			<div class="txt_wrap">
+				<a th:href="@{|prod/detail/${b_list.book_id}|}">
+					<!-- <div th:text = "${b_list.book_id}"></div> -->
+					<div th:text = "${b_list.book_title}" class="title_txt"></div>
+					<div th:text = "${b_list.book_writer}"></div>
+					<div th:text = "${b_list.book_price}" class="price_txt"></div>
+					<div th:text = "${b_list.book_genre}"></div>
+					<div th:text = "${b_list.book_intro}" class="l_intro_wrap"></div>
+					<div th:each="a_list : ${l_avg}" th:if="${b_list.book_id == a_list[0]}" class="onestar_wrap">
+						<img src="../../static/image/prod/star_on.png" class="one_star"/>
+						<p th:text="${a_list[1]}"></p>
+					</div>
+				</a>
+			</div>
+			</div>
+		</div>
+		<!--책 전체 출력. 그냥 /prod인건 b_genre값이 없어서 위의 코드가 실행안되서 만듦-->
+		<div th:each = "b_list : ${C_Books}" th:if="${b_genre == ''}" class="wrap_gen">
+			<div class="flex_wrap">
+				<a th:href="@{|prod/detail/${b_list.book_id}|}">
+					<div class="img_wrap">
+						<img th:src = "${b_list.book_img}"/>
+					</div>
+				</a>
+			<div class="txt_wrap">
+				<a th:href="@{|prod/detail/${b_list.book_id}|}">
+					<div th:text = "${b_list.book_title}" class="title_txt"></div>
+					<div th:text = "${b_list.book_writer}"></div>
+					<div th:text = "${b_list.book_price}" class="price_txt"></div>
+					<div th:text = "${b_list.book_genre}"></div>
+					<div th:text = "${b_list.book_intro}" class="l_intro_wrap"></div>
+					<div th:each="a_list : ${l_avg}" th:if="${b_list.book_id == a_list[0]}" class="onestar_wrap">
+						<img src="../../static/image/prod/star_on.png" class="one_star"/>
+						<p th:text="${a_list[1]}"></p>
+					</div>
+				</a>
+			</div>
+			</div>
+		</div>
+	</div>
+	</body>
+	
+	<script th:inline="javascript">
+	// 검색버튼 클릭시.
+	const btn = document.getElementById("search_btn");
+    const searchInput = document.getElementById("search_kw");
+    const searchForm = document.getElementById("searchForm");
+
+    // 검색 버튼 클릭 시 실행
+    btn.addEventListener('click', function() {
+        // 검색창(search_kw)에서 입력된 값을 send_kw라는 인풋값에 할당함. 그리고 searchForm을 서버에 전송함.
+        document.getElementById('send_kw').value = searchInput.value;
+        searchForm.submit();
+    });
+
+    // 입력 필드에서 Enter 키를 눌렀을 때 실행
+    searchInput.addEventListener('keydown', function(event) {
+        // Enter 키의 코드 값은 13입니다.
+        if (event.key === 'Enter') {
+            // 기본 동작을 막아줍니다 (폼 제출 등의 기본 동작을 방지)
+            event.preventDefault();
+            // 검색 버튼 클릭 이벤트를 강제로 호출
+            btn.click();
+        }
+    });
+	
+	// 책 장르 글자색. !!!!!!!!!!!!!나중에 수정
+	/*
+	document.addEventListener('DOMContentLoaded', function() {
+        // 현재 URL의 쿼리 파라미터를 가져옵니다.
+		// window.location.search 현재 페이지 url의 ?이후 부분 갖고오기. URLSearchParams 파라미터로 변환
+        const params = new URLSearchParams(window.location.search);
+        const genre = params.get('genre');
+        
+        // l_genre_wrap의 a갖고오기.
+        const links = document.querySelectorAll('.l_genre_wrap a');
+        
+        // 각 링크를 순회하면서 genre에 맞는 링크에 클래스를 추가합니다.
+        links.forEach(link => {
+            if (link.href.includes(`genre=${encodeURIComponent(genre)}`)) {
+                link.classList.add('active');
+            }
+        });
+    });
+	*/
+	</script>
+</div>
+</html>

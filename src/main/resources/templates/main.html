@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout}">
+
+<head>
+	<meta charset="UTF-8">
+	<title>북드림 온라인서점</title>
+	<style>
+		h2 {
+			padding-top: 50px;
+		}
+
+		.book-card {
+			margin-bottom: 20px;
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+		}
+
+		.book-img {
+			width: 100%;
+			height: auto;
+		}
+
+		.card-body {
+			flex-grow: 1;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.card-body a {
+			margin-bottom: auto;
+		}
+
+		.card-title,
+		.card-text {
+			margin-bottom: 10px;
+		}
+
+		.card-footer {
+			margin-top: auto;
+		}
+
+		.sidebar {
+			position: fixed;
+			right: 50px;
+			top: 200px;
+			width: 250px; /* Width increased */
+			height: 100%;
+			padding: 1rem;
+			font-size: 0.8rem;
+			overflow-y: auto;
+		}
+
+		.sidebar h2 {
+			font-size: 1.5rem;
+			color: blue;
+		}
+
+		.content-wrapper {
+			margin-right: 370px; /* Adjust margin to fit the wider sidebar */
+		}
+
+		.book-recommendations {
+			color: aliceblue;
+		}
+
+		.list-group-item h5 {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			display: -webkit-box;
+			-webkit-line-clamp: 2; /* Limit to 2 lines */
+			-webkit-box-orient: vertical;
+			white-space: normal;
+		}
+	</style>
+</head>
+
+<body>
+	<div layout:fragment="content" >
+		<div class="content-header">
+			<header>
+		<img src="/image/Group 19 (1).png" class="img-fluid" alt="북드림 배너">
+			</header>
+		</div>
+		<main>
+			<section id="book-recommendations">
+				<h2>오늘의 Pick</h2>
+				<div class="row">
+					<!-- 추천 책 리스트 -->
+					<th:block th:each="book : ${recommendedBooks}">
+						<div class="col-md-3">
+							<div class="card book-card">
+								<a th:href="@{|prod/detail/${book.book_id}|}">
+									<img th:src="${book.book_img}" class="card-img-top book-img" alt="책 이미지">
+								</a>
+								<div class="card-body">
+									<a th:href="@{|prod/detail/${book.book_id}|}">
+										<h5 class="card-title" th:text="${book.book_title}"></h5>
+									</a>
+									<p class="card-text" th:text="'장르: ' + ${book.book_genre}"></p>
+									<p class="card-text" th:text="'작가: ' + ${book.book_writer}"></p>
+								</div>
+							</div>
+						</div>
+					</th:block>
+				</div>
+			</section>
+			<section id="events">
+				<h2>진행중인 이벤트</h2>
+				<div class="row">
+					<div th:each="event : ${events}" class="col-md-6 mb-4">
+						<div class="card h-100">
+							<a th:href="@{|/event/detail/${event.idx}|}">
+								<img th:src="@{'/image/eventimage/' + ${event.image}}" alt="Event Image" class="card-img-top">
+							</a>
+							<div class="card-body">
+								<h5 class="card-title" th:text="${event.title}">이벤트 제목</h5>
+								<p class="card-text" th:text="${event.description}">이벤트 설명</p>
+							</div>
+							<div class="card-footer">
+								<small class="text-muted">시작: <span th:text="${#temporals.format(event.startDate, 'yyyy-MM-dd')}">시작 날짜</span></small><br>
+								<small class="text-muted">종료: <span th:text="${#temporals.format(event.endDate, 'yyyy-MM-dd')}">종료 날짜</span></small>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			<aside class="sidebar">
+				<section id="community-board">
+					<h2>지금 뜨는 글</h2>
+					<div class="list-group">
+						<th:block th:each="freeboard : ${topFreeboards}">
+							<a th:href="@{|/freeboard/detail/${freeboard.id}|}" class="list-group-item list-group-item-action">
+								<h5 class="mb-1" th:text="${freeboard.title}">제목</h5>
+								<small th:text="${freeboard.views} + ' 조회수'">조회수</small>
+							</a>
+						</th:block>
+					</div>
+				</section>
+			</aside>
+
+		</main>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

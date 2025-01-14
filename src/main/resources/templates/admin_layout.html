@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<title>관리자 페이지</title>
+</head>
+<style>
+	/*헤더푸터용*/
+	.inner {
+	  margin: 0 auto !important;
+	  max-width: 1280px !important;
+	}
+	/*메인콘텐츠용*/
+	.container{
+	  margin: 70px auto 70px auto !important;
+	  max-width: 1280px !important;
+	}
+	/* number 화살표 제거 - Chrome, Safari, Edge, Opera */
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+	  -webkit-appearance: none;
+	  margin: 0;
+	}
+	/* number 화살표 제거 - Firefox  */
+	input[type='number'] {
+	  -moz-appearance: textfield;
+	}
+	.logo {
+	   width: 120px;
+	   height: 70px;
+	}
+</style>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light border-bottom" sec:authorize="isAuthenticated()">
+		<div class="container-fluid  inner d-flex  justify-content-between">
+		    <ul class="navbar-nav mb-2 mb-lg-0">
+	            <li class="nav-item mx-2">
+					<a th:href="@{|/main|}">
+	                    <img src = "/image/logo.png" class="logo">
+	                </a>
+	            </li>
+            </ul>
+            <ul class="nav navbar-nav fs-4 ">
+            	<li class="nav-item mx-3">
+					<a href="/admin/user" class="text-decoration-none text-dark">회원 관리</a>
+            	</li>
+            	<li class="nav-item mx-3">
+					<a href="/admin/event" class="text-decoration-none text-dark">이벤트 관리</a>
+            	</li>
+            	<li class="nav-item mx-3">
+					<a href="/admin/prod" class="text-decoration-none text-dark">서적 현황</a>
+            	</li>
+            	<li class="nav-item mx-3">
+					<a href="/admin/prod_review" class="text-decoration-none text-dark">서적 리뷰 관리</a>
+            	</li>
+            	<li class="nav-item mx-3">
+					<a href="/admin/order" class="text-decoration-none text-dark">주문 현황</a>
+            	</li>
+            </ul>
+			<a href="/admin/logout" class="fs-6 mx-2 text-decoration-none text-dark-emphasis">로그아웃</a>
+		</div>
+	</nav>
+	<th:block layout:fragment="content" class="container"></th:block>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

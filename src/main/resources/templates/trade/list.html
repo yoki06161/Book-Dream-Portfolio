@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<head>
+    <title>중고거래</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .cover_area img {
+            max-width: 80%;
+            height: auto;
+        }
+        .card {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+        }
+        .card img {
+            margin-bottom: 15px;
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .card-text {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        .price-info,
+        .grade-info,
+        .sale-price-info {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000000; /* 검정색으로 설정 */
+        }
+        .status-info {
+       		font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        	color: red;
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content" class="container my-3">
+        <div class="row my-3">
+            <div class="col-md-6">
+                <a th:href="@{/trade/create}" class="btn btn-primary">판매 등록하기</a>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" id="search_kw" class="form-control" th:value="${kw}" placeholder="검색어를 입력하세요">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="btn_search">찾기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 게시글이 없을 때의 문구 출력 -->
+        <div th:if="${paging.empty}">
+            <div class="alert alert-info" role="alert">
+                중고서적 매물이 없습니다.
+            </div>
+        </div>
+        
+        <div th:if="${not paging.empty}">
+            <div th:each="trade, loop : ${paging}" class="card">
+                <div class="row no-gutters">
+                    <div class="col-md-3">
+                        <div class="cover_area">
+                            <img th:src="@{|/static/image/${trade.image}|}" class="card-img" alt="Image" />
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="card-body">
+                            <a th:href="@{/trade/detail/{idx}(idx=${trade.idx})}">
+                                <h5 class="card-title" th:text="${trade.title}"></h5>
+                            </a>
+                            <p class="card-text"><span th:text="${trade.info}"></span></p>
+                            <p class="card-text"><span th:text="${#temporals.format(trade.postdate, 'yyyy-MM-dd HH:mm')}"></span></p>
+                            <p class="grade-info">등급: <span th:text="${trade.grade}"></span></p> <!-- 등급 추가 -->
+                            <p class="price-info">정가: <span th:text="${trade.originalPrice}"></span>원</p> <!-- 정가 추가 -->
+                            <p class="sale-price-info">판매가: <span th:text="${trade.price}"></span>원</p> <!-- 판매가 추가 -->
+                            <p class="card-text status-info"><span th:text="${trade.status}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 페이징처리 시작 -->
+        <div th:if="${not paging.empty}">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${!paging.hasPrevious()} ? 'disabled'">
+                        <a class="page-link" href="javascript:void(0)" th:data-page="${paging.number-1}">이전</a>
+                    </li>
+                    <li th:each="page: ${#numbers.sequence(0, paging.totalPages-1)}"
+                        th:if="${page >= paging.number-2 and page <= paging.number+2}"
+                        th:classappend="${page == paging.number} ? 'active'" class="page-item">
+                        <a th:text="${page+1}" class="page-link" href="javascript:void(0)" th:data-page="${page}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${!paging.hasNext()} ? 'disabled'">
+                        <a class="page-link" href="javascript:void(0)" th:data-page="${paging.number+1}">다음</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <!-- 페이징처리 끝 -->
+        <form th:action="@{/trade/list}" method="get" id="searchForm">
+            <input type="hidden" id="kw" name="kw" th:value="${kw}">
+            <input type="hidden" id="page" name="page" th:value="${paging.number}">
+        </form>
+    </div>
+    <script layout:fragment="script" type='text/javascript'>
+        document.addEventListener('DOMContentLoaded', function() {
+            const pageElements = document.getElementsByClassName("page-link");
+            Array.from(pageElements).forEach(function(element) {
+                element.addEventListener('click', function() {
+                    document.getElementById('page').value = this.dataset.page;
+                    document.getElementById('searchForm').submit();
+                });
+            });
+            const btnSearch = document.getElementById("btn_search");
+            btnSearch.addEventListener('click', function() {
+                document.getElementById('kw').value = document.getElementById('search_kw').value;
+                document.getElementById('page').value = 0;  // 검색버튼을 클릭할 경우 0페이지부터 조회한다.
+                document.getElementById('searchForm').submit();
+            });
+        });
+    </script>
+</body>
+</html>

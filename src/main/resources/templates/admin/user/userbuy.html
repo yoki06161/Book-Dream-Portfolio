@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3" style="display:flex">
+    <div style="width:230px;padding:0 10px">
+        <nav th:replace="~{user/mynav :: headerfragment}"></nav>
+    </div>
+    <div class="main-content" style="width:700px;padding-left:50px">
+        <h2>주문 내역</h2>
+        <hr>
+        <div class="mb-3">
+            <h3 th:text="${name} + '님 주문하신 상품 내역입니다.'"></h3>
+        </div>
+        <div th:if="${payList}">
+            <div th:each="pay : ${payList}">
+                <h4>주문 ID: <span th:text="${pay.pay_id}"></span></h4>
+                <p>이름: <span th:text="${pay.name}"></span></p>
+                <p>전화번호: <span th:text="${pay.phone}"></span></p>
+                <p>주소: <span th:text="${pay.address}"></span></p>
+                <p>우편번호: <span th:text="${pay.post_code}"></span></p>
+                <p>총 가격: <span th:text="${pay.total_price}"></span></p>
+                <div th:each="order : ${ordersList}">
+                <!-- pay_id에 맞는 Orders만 표시 -->
+                <div th:each="order : ${ordersByPayId[pay.pay_id]}">
+                    <p>주문서 ID: <span th:text="${order.order_id}"></span></p>
+                    <p>책 ID: <span th:text="${order.book_id}"></span></p>
+                    <p>수량: <span th:text="${order.count}"></span></p>
+                    <p>가격: <span th:text="${order.count_price}"></span></p>
+                </div>
+                <hr>
+            </div>
+        </div>
+        <div class="mb-3" th:if="${None}">
+            <span th:text="${None}" class="form-control"></span>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</div>
+</html>

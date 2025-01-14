@@ -1,0 +1,32 @@
+<html layout:decorate="~{admin_layout}">
+<head>
+	<title>북드림 서적 현황</title>
+</head>
+<body>
+	<div layout:fragment="content" class="container">
+		<h2 class="text-center mb-4 fw-bold">서적 현황</h2>
+		<table class="table table-bordered table-hover text-center align-middle">
+			<thead>
+				<tr class="table-active">
+					<th scope="col">ID</th>
+					<th scope="col">이미지</th>
+					<th scope="col">제목</th>
+					<th scope="col">정보</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each = "book : ${books}" >
+					<td th:text = "${book.book_id}"></td>
+					<td><img th:src = "${book.book_img}" style="width: 82px; height: 118.34px;"/></td>
+					<td>
+						<a th:href="@{|prod/${book.book_id}|}" th:text= "${book.book_title}">
+						</a>
+					</td>
+					<td th:text = "${book.book_writer}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+</body>
+</html>

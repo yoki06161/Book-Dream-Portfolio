@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+<head>
+    <title>채팅방 목록</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat_room_list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .chat_room_list li {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #f1f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        .chat_badge {
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 5px 10px;
+            font-size: 0.8em;
+            position: absolute;
+            top: 41px;
+            right: 10px;
+        }
+
+        .chat-room-info {
+            flex-grow: 1;
+        }
+
+        .last-message {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .message-time {
+            font-size: 0.8em;
+            color: #999;
+            position: absolute;
+            right: 10px;
+        }
+    </style>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script>
+        var stompClientChatRooms = null;
+        var userId = '[[${userId}]]';
+
+        document.addEventListener('DOMContentLoaded', function () {
+            connectChatRooms();
+            setTimeout(function() {
+                var chatRoomElements = document.querySelectorAll('li[data-chat-room-id]');
+                console.log('Loaded chat rooms:', chatRoomElements);
+                chatRoomElements.forEach(function(element) {
+                    console.log('Chat room ID:', element.getAttribute('data-chat-room-id'));
+                });
+            });
+        });
+
+        function connectChatRooms() {
+            var socket = new SockJS('/ws');
+            stompClientChatRooms = Stomp.over(socket);
+            stompClientChatRooms.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                stompClientChatRooms.subscribe('/topic/chatRoomsUpdate', function (messageOutput) {
+                    var message = JSON.parse(messageOutput.body);
+                    console.log('Received message: ', message);
+                    if (message.hasOwnProperty('tradeIdx')) {
+                        updateChatRoomList(message);
+                    } else {
+                        console.log('Ignoring non-chatRoom update message');
+                    }
+                });
+            });
+        }
+
+        function updateChatRoomList(chatRoom) {
+            if (chatRoom.hasOwnProperty('tradeIdx')) {
+                var chatRoomElement = document.querySelector('li[data-chat-room-id="' + chatRoom.id + '"]');
+
+                if (chatRoomElement) {
+                    chatRoomElement.querySelector('.last-message').textContent = chatRoom.lastMessage;
+                    chatRoomElement.querySelector('.message-time').textContent = new Date(chatRoom.lastMessageTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+
+                    var badgeElement = chatRoomElement.querySelector('.chat_badge');
+                    var newMessagesCount = (userId === chatRoom.receiverId) ? chatRoom.newMessagesCountForReceiver : chatRoom.newMessagesCountForSender;
+
+                    if (newMessagesCount > 0) {
+                        if (!badgeElement) {
+                            badgeElement = document.createElement('span');
+                            badgeElement.classList.add('chat_badge');
+                            chatRoomElement.appendChild(badgeElement);
+                        }
+                        badgeElement.textContent = newMessagesCount;
+                    } else if (badgeElement) {
+                        badgeElement.remove();
+                    }
+                } else {
+                    console.warn('Chat room element not found for id: ', chatRoom.id);
+                }
+            } else {
+                console.log('Received message is not a chatRoom update, ignoring.');
+            }
+        }
+
+    </script>
+</head>
+<body>
+    <div layout:fragment="content" class="container my-3">
+        <h2 class="border-bottom py-2" style="text-align: center;">채팅방 목록</h2>
+        <ul class="chat_room_list" id="chatRoomList">
+            <li th:each="chatRoom : ${chatRooms}" th:attr="data-chat-room-id=${chatRoom.id}">
+                <div class="chat-room-info">
+                    <a th:href="@{/trade/chat/start(tradeIdx=${chatRoom.tradeIdx}, chatRoomId=${chatRoom.id})}"
+                       th:text="${chatRoom.opponentUsername + ' (' + chatRoom.bookTitle + ')'}"></a>
+                    <div class="last-message" th:text="${chatRoom.lastMessage}"></div>
+                </div>
+                <div class="message-time" th:text="${chatRoom.getFormattedLastMessageTime()}"></div>
+                <span class="chat_badge"
+                      th:if="${chatRoom.getNewMessagesCountForUser(userId)} > 0"
+                      th:text="${chatRoom.getNewMessagesCountForUser(userId)}"></span>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

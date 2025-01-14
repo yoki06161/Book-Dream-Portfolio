@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<head>
+<title>주문 내역</title>
+</head>
+<div layout:fragment="content" class="container my-3"
+	style="display: flex;">
+	<div style="width: 230px; padding: 0 10px">
+		<nav th:replace="~{user/mynav :: headerfragment}"></nav>
+	</div>
+	<div class="main-content" style="width: 1000px; padding-left: 50px">
+		<h3 style="font-weight: 700; color: #6f6f6f;">주문 내역</h3>
+		<hr>
+		<div class="mb-3" th:if="${payList}">
+			<div class="mb-3">
+				<span th:text="${name} + '님 주문하신 상품 내역입니다.'"
+					style="display: block; margin-bottom: 5px; font-weight: 700;"></span>
+			</div>
+			<div class="order-list">
+				<div th:each="pay : ${payList}" class="order"
+					style="border-radius: 10px; margin-bottom: 20px; overflow: hidden;">
+					<div
+						style="display: flex; justify-content: space-between; padding: 5px 10px; font-size: 14px; font-weight: 700; color: #6f6f6f;">
+						<div>
+							<span>결제 ID : </span><span th:text="${pay.pay_id}"></span>
+						</div>
+						<div>
+							<span>결제 일자 : </span><span
+								th:text="${pay.order_date.toString().substring(0, 10) + ' ' + pay.order_date.toString().substring(11, 19)}"></span>
+						</div>
+					</div>
+					<div class="order-items"
+						style="display: flex; flex-direction: column;">
+						<div th:each="order : ${ordersByPayId[pay.pay_id]}"
+							th:if="${pay.pay_id == order.pay_id}" class="order-item"
+							style="border: 1px solid #9f9f9f; border-bottom: none;">
+							<div th:each="book : ${allBooks}"
+								th:if="${order.book_id == book.book_id}" style="display: flex;">
+								<a th:href="@{|/prod/detail/${book.book_id}|}"> <img
+									th:src="${book.book_img}"
+									style="width: 150px; height: 200px; border-right: 1px solid #9f9f9f;" />
+								</a>
+								<div
+									style="flex: 1; display: flex; flex-flow: column; justify-content: space-between;">
+									<div>
+										<div th:text="'제목 : ' + ${book.book_title}"
+											style="padding: 15px 0 5px 20px; font-size: 17px; font-weight: 700;"></div>
+										<div th:text="'저자 : ' + ${book.book_writer}"
+											style="padding-left: 20px;"></div>
+										<div th:text="'가격 : ' + ${book.book_price}"
+											style="padding-left: 20px;"></div>
+										<div th:text="'수량 : ' + ${order.count}"
+											style="padding-left: 20px;"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 총 가격 표시 -->
+						<div th:text="'총 가격 : ' + ${finalPrices[pay.pay_id]}"
+							style="display: flex; justify-content: flex-end; padding-right: 10px; font-size: 17px; font-weight: 700; border: 1px solid #9f9f9f; height: 40px; align-items: center;border-radius:0 0 10px 10px;background-color: #efefef"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="mb-3" th:if="${None}">
+			<span th:text="${None}" style="font-weight: 700;"></span> <span><a
+				href="/prod" style="font-weight: 700; text-decoration: none;">구매하러
+					가볼까요? -></a></span>
+			<hr>
+			<section id="book-recommendations">
+				<h4 style="margin-bottom: 20px; font-weight: 700; color: #6f6f6f">이
+					상품을 추천해요!</h4>
+				<div class="row">
+					<!-- 추천 책 리스트 -->
+					<th:block th:each="book : ${recommendedBooks}">
+						<div class="col-md-3">
+							<div class="card book-card" style="height: 500px;">
+								<a th:href="@{|/prod/detail/${book.book_id}|}"> <img
+									th:src="${book.book_img}" class="card-img-top book-img"
+									alt="책 이미지">
+								</a>
+								<div class="card-body">
+									<a th:href="@{|/prod/detail/${book.book_id}|}"
+										style="text-decoration: none;">
+										<h5 class="card-title" th:text="${book.book_title}"></h5>
+									</a>
+									<p class="card-text" th:text="'장르: ' + ${book.book_genre}"></p>
+									<p class="card-text" th:text="'가격: ' + ${book.book_price}"></p>
+								</div>
+							</div>
+						</div>
+					</th:block>
+				</div>
+			</section>
+		</div>
+	</div>
+</div>
+</html>

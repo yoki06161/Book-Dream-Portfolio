@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<head>
+	<title>주문/결제 완료</title>
+</head>
+    <main layout:fragment="content" class="container" id="container">
+      <h2 class="fw-bold text-center">주문/결제 완료</h2>
+      <br />
+      <br />
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h4 class="mb-3">주문 상품(주문번호 <span id="pay_id" th:text="${pay.pay_id}"></span>)</h4>
+          <table class="table table-borderless align-middle text-center">
+          	<tbody th:each="orders : ${orders}">
+	            <tr th:each="book : ${books}" th:if="${book.book_id == orders.book_id}">
+			        <td><img th:src="${book.book_img}" alt="상품사진" style="width: 82px; height: 118.34px;"></td>
+			        <td class="text-start">
+			        	<p class="fs-5 fw-bold" th:text="${book.book_title}"></p>
+			        	<p class="fs-6" style="color:gray;" th:text="${book.book_writer}"></p>
+			            <p class="fs-5" th:text="${book.book_price}"></p>
+			         </td>
+			        <td><span th:text="${orders.count}"></span>권</td>
+			        <td th:text="${orders.count_price}"></td>
+	            </tr>
+          	</tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="row">
+          <div class="col">
+            <div class="card-body">
+              <h4 class="mb-3">주문자 정보</h4>
+              <p>이름: <span id="name" th:text="${pay.name}"></span></p>
+              <p>휴대폰 번호: <span id="phone" th:text="${pay.phone}"></span></p>
+              <!-- 주문조회용 비밀번호는 로그인하지 않았을 때만 출력 -->
+              <!-- <p>주문 조회용 비밀번호: <span id="pw" th:text="${pay.pw}"></span></p> -->
+            </div>
+          </div>
+          <div class="col">
+            <div class="card-body">
+              <h4 class="mb-3">배송 정보</h4>
+              <p>우편번호: <span th:text="${pay.post_code}"></span></p>
+              <p>배송주소: <span th:text="${pay.address}"></span></p>
+              <p>배송요청사항: <span th:text="${pay.request}"></span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-body mx-auto" style="width: 1256px !important">
+          <div class="d-flex justify-content-between">
+            <h4>총 가격: <span th:text="${pay.total_price}">0</span></h4>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#refund"
+      id="refundButton">주문/결제 취소하기</button>
+    	
+      <!-- 결제 취소 버튼 클릭 시 모달창 -->  
+      <div class="modal fade" data-bs-backdrop="static" tabIndex=-1 id="refund">
+      <div class="modal-dialog">
+      	  <div class="modal-content">
+              <div class="modal-header">
+              	  <h1 class="modal-title fs-5">주문/결제 취소</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  주문번호 <span th:text="${pay.pay_id}"></span>의 주문/결제를 취소하시려면,
+                  <input type="hidden" id="pay_pw" th:value="${pay.pw}">
+                  <br> 주문 취소용 비밀번호를 한번 더 입력해주세요.
+                  <br><br>
+                  <input type="password" class="form-control" id="pw" placeholder="주문 취소용 비밀번호를 입력하여 주문/결제 취소">
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-primary delete" th:id="'' + ${pay.pay_id}">주문 취소</button>
+              </div>
+          </div>
+      </div>
+      </div>
+    </main>
+    <!-- 스크립트 블록을 정의 -->
+    <th:block layout:fragment="script">
+        <script type="text/javascript" th:src="@{/js/order-success-ui.js}"></script>
+    	    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    </th:block>
+</html>

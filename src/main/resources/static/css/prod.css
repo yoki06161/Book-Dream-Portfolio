@@ -1,0 +1,396 @@
+/* 포인트 컬러 */
+:root {
+  --point-color1: #6f6f6f;
+}
+
+
+/* 상품 리스트 */
+	img {
+		width: 100%;
+	}
+	
+	.b_inner {
+		padding-top: 20px;
+	}
+
+	.flex_wrap .img_wrap {
+		width: 200px;
+	}
+	
+	.l_genre_wrap a {
+	    text-decoration: none;
+	    color: black; /* 기본 색상 */
+	}
+
+	/* 동적으로 추가될 클래스를 위한 스타일
+	.l_genre_wrap a.active {
+	    color: red; /* 활성화된 링크의 색상
+	}
+	*/
+	
+	.search_wrap {
+		width: 700px;
+		height: 50px;
+		border-radius: 50px;
+		border: 5px solid var(--point-color1);
+		overflow: hidden;
+		position: relative;
+		display: flex;
+		align-items: center;
+	}
+	
+	.search_bar {
+		padding: 0 20px;
+		width: 650px;
+		height: 100%;
+		border: none;
+	}
+	
+	.search_bar:focus {
+		outline: none;
+	}
+	
+	.s_btn {
+		height: 30px;
+		width: 30px;
+		color: #fff;
+		border: none;
+		background: url(../image/prod/search_icon.svg) no-repeat center / 100%;
+		position: absolute;
+		right: 20px;
+	}
+	
+	.flex_wrap {
+		display: flex;
+		gap: 50px;
+	}
+	
+	.wrap_gen {
+		padding: 50px 0;
+		border-bottom: 1px solid #ddd;
+	}
+	
+	.txt_wrap > a {
+		width: 700px;
+		color: black;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	
+	.txt_wrap > a > .title_txt {
+		font-size: 20px;
+		font-weight: 550;
+	}
+	
+	.txt_wrap > a > .price_txt {
+		font-size: 20px;
+		font-weight: 500;
+	}
+	
+
+	.l_genre_wrap {
+		position: fixed;
+		left: 100px;
+		padding: 10px;
+		background: #fff;
+		border: 1px solid var(--point-color1);
+		border-radius: 10px;
+	}
+	
+	.l_genre_wrap > a {
+		padding: 10px 0;
+	}
+	
+	.l_intro_wrap {
+		display: -webkit-box;
+	    overflow: hidden;
+	    text-overflow: ellipsis;
+	    -webkit-box-orient: vertical;
+	    -webkit-line-clamp: 2;
+	}
+	
+	.onestar_wrap {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+	
+	.one_star {
+		width: 20px;
+	}
+	
+	.onestar_wrap > p {
+		font-size: 20px;
+		font-weight: 500;
+	}
+
+/* 상세보기 페이지*/
+	a {
+		text-decoration: none;
+	}
+	
+	.dflex_wrap {
+		display: flex;
+		gap: 100px;
+		padding: 50px 0;
+	}
+	
+	.dflex_wrap .img_wrap {
+		width: 400px;
+		height: fit-content;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+	}
+	
+	
+	.d_txt_wrap {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+	
+	.title {
+		width: 500px;
+		font-weight: bold;
+		padding-bottom: 30px;
+		word-break: keep-all;
+	}
+	
+	.bcount {
+		height: 46px;
+		width: 66px;
+		border: none;
+		border-right: 1px solid #cdcdcd;
+		outline: none;
+	}
+	
+	strong {
+		display: block;
+		font-size: 30px;
+		padding: 20px 0;
+	}
+
+	/*카운트 옆 화살표 지우기*/	
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+	  -webkit-appearance: none;
+	  margin: 0;
+	}
+	
+	input[type='number'] {
+	  -moz-appearance: textfield;
+	}
+	
+	.c_wrap {
+		display: flex;
+		gap: 50px;
+		align-items: center;
+	}
+	
+	.pb_wrap {
+		border: 1px solid #ddd;
+		display: flex;
+	}
+	
+	.cb_wrap > button {
+		width: 25px;
+		height: 23px;
+		display: block;
+		border: none;
+	}
+	
+	.c_wrap .abtn {
+		background: url(../image/prod/icon_Arrow.png) no-repeat center;
+		transform: rotate(180deg);
+		border-top: 1px solid #cdcdcd;
+	}
+	
+	.c_wrap .mbtn {
+		background: url(../image/prod/icon_Arrow.png) no-repeat center;
+	}
+	
+	.c_wrap .result {
+		font-size: 23px;
+		font-weight: 600;
+	}
+	
+	.b_wrap {
+		display: flex;
+		padding-top: 50px;
+	}
+	
+	.basket {
+		padding: 15px 30px;
+		color: var(--point-color1);
+		border: 1px solid var(--point-color1);
+		border-radius: 10px 0 0 10px;
+		font-size: 20px;
+		font-weight: 600;
+	}
+	
+	.buy {
+		padding: 15px 30px;
+		color: #fff;
+		background: var(--point-color1);
+		border-radius: 0 10px 10px 0;
+		font-size: 20px;
+		font-weight: 600;
+	}
+	
+	textarea:focus {
+		outline: none;
+ 	}
+	
+	textarea {
+		width: 100%;
+		height: 100px;
+		resize: none;
+	}
+	
+	.w_review {
+		border-radius: 6px;
+		padding: 11px 14px;
+	}
+	
+	.review_cont {
+		font-size: 20px;
+	}
+	
+	button {
+		border: 1px solid #ddd;
+	}
+	
+	.answer_wrap {
+		display: none;
+		padding: 50px 0;
+	}
+	
+	.s_wrap {
+		display: flex;
+		align-items: center;
+	}
+	
+	.s_wrap .score_txt {
+		font-size: 25px;
+		color: black;
+		font-weight: 600;
+		padding-right: 20px;
+	}
+	
+	/* 평가된 별점*/
+	.scores {
+		display: inline;
+	}
+	
+	.scores .score {
+		width: 25px; 
+		height: 25px; 
+		margin-right: 10px;
+		display: inline-block; 
+		background: url(../image/prod/star_off.png); 
+		background-size: 100%; 
+		box-sizing: border-box; 
+	}
+	.scores .score.on {
+		width: 25px; 
+		height: 25px;
+		margin-right: 10px;
+		display: inline-block; 
+		background: url(../image/prod/star_on.png);
+		background-size: 100%; 
+		box-sizing: border-box; 
+	}
+	
+
+	/* 넣는 별점 */
+	.star_rating .star {
+		width: 25px; 
+		height: 25px; 
+		margin-right: 10px;
+		display: inline-block; 
+		background: url(../image/prod/star_off.png); 
+		background-size: 100%; 
+		box-sizing: border-box; 
+	}
+	.star_rating .star.on {
+		width: 25px; 
+		height: 25px;
+		margin-right: 10px;
+		display: inline-block; 
+		background: url(../image/prod/star_on.png);
+		background-size: 100%; 
+		box-sizing: border-box; 
+	}
+	
+	.score_f {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+	
+	.score_btn {
+		border: none;
+		background: var(--point-color1);
+		color: #fff;
+		padding: 10px 20px;
+		border-radius: 10px;
+		font-size: 20px;
+	}
+	
+	.sbtn {
+		border: none;
+		background: var(--point-color1);
+		color: #fff;
+		padding: 10px 20px;
+		border-radius: 10px;
+		font-size: 14px;
+		position: absolute;
+		right: 0;
+	}
+	
+	.i_wrap {
+		width: 100%;
+		height: 100px;
+		position: relative;
+		padding: 20px;
+		border-bottom: 1px solid #ddd;
+	}
+	
+	.i_wrap2 {
+		width: 100%;
+		height: 100px;
+		position: relative;
+		padding: 20px;
+	}
+	
+	.i_wrap .subbtn {
+		position: absolute;
+		right: 0;
+	}
+	
+	.re_wrap {
+		padding: 30px 0;
+		border-bottom: 1px solid var(--point-color1);
+	}
+	
+	.a_btn {
+		border: none;
+		background: none;
+		position: absolute;
+		right: 0;
+	}
+	
+	.ab_wrap {
+		width: 100%;
+		height: 20px;
+		position: relative;
+		padding: 20px;
+	}
+	
+	.a_list {
+		background: #f7f7f7;
+		padding: 20px;
+		border-radius: 20px;
+		margin-bottom: 20px;
+	}
+	

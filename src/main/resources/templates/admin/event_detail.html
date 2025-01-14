@@ -1,0 +1,36 @@
+<html layout:decorate="~{admin_layout}">
+<head>
+	<title>북드림 이벤트 상세정보</title>
+</head>
+<body>
+	<div layout:fragment="content" class="container">
+			<div class="fs-6 position-absolute top-50 start-50 translate-middle">
+				<h2 class="text-center mb-5 fw-bold">이벤트 정보 상세보기</h2>
+				<div class="d-flex">
+					<p class="fw-bold">이벤트 타이틀</p>&ensp;<span th:text = "${event.title}"></span>
+				</div>
+				<div>
+					<h6 class="fw-bold">이벤트 설명</h6><span th:text = "${event.description}"></span>
+				</div>
+				<br>
+				<div>
+					<h6 class="fw-bold">이벤트 내용 </h6><span th:text = "${event.content}"></span>
+				</div>
+				<br>
+				<div class="d-flex">
+					<p class="fw-bold">이벤트 시작일자</p>&ensp;<span th:text = "${#temporals.format(event.startDate, 'yyyy-MM-dd')}"></span>
+				</div>
+				<div class="d-flex">
+					<p class="fw-bold">이벤트 종료일자</p>&ensp;<span th:text = "${#temporals.format(event.endDate, 'yyyy-MM-dd')}"></span>
+				</div>
+				
+				<br>
+				<a th:href="@{|/admin/event|}" class="btn btn-secondary">이벤트 목록</a>
+				<a th:href="@{|/admin/event/update/${event.idx}|}" class="btn btn-secondary">수정</a>
+				<form th:action="@{/admin/event/delete/{idx}(idx=${event.idx})}" method="post" style="display:inline;">
+    				<button type="submit" class="btn btn-secondary">삭제</button>
+				</form>
+			</div>
+	</div>
+</body>
+</html>

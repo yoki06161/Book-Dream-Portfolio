@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+<head>
+    <title>중고거래 상세보기</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .card img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .card-text {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-control,
+        .btn {
+            margin-bottom: 10px;
+        }
+
+        .btn-outline-primary,
+        .btn-outline-secondary,
+        .btn-outline-success,
+        .btn-outline-info {
+            margin-right: 5px;
+        }
+
+        .status-form {
+            display: flex;
+            align-items: center; /* 버튼과 선택 상자를 수직 정렬합니다 */
+        }
+
+        .status-form select {
+            margin-right: 10px;
+        }
+
+        .card-body-intro {
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .intro-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .intro-text {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            margin-left: 200px;
+            margin-right: 200px;
+        }
+
+        .button-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .button-group .btn {
+            margin-right: 5px;
+        }
+
+        .message-time {
+            font-size: 0.8em;
+            color: #999;
+        }
+
+        .price-info,
+        .grade-info,
+        .sale-price-info {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000000; /* 검정색으로 설정 */
+        }
+        .status-info {
+       		font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        	color: red;
+        }
+    </style>
+    <script layout:fragment="script" type='text/javascript'>
+        document.addEventListener('DOMContentLoaded', function () {
+            var messageTimeElements = document.querySelectorAll('.message-time');
+            messageTimeElements.forEach(function (element) {
+                var timestamp = element.getAttribute('data-timestamp');
+                var date = new Date(timestamp);
+                element.textContent = date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div layout:fragment="content" class="container my-3">
+        <h2 class="border-bottom py-2">거래 상세 정보</h2>
+        <div class="card my-3">
+            <div class="row no-gutters">
+                <div class="col-md-4 text-center my-auto">
+                    <img th:src="@{|/static/image/${trade.image}|}" alt="Image" class="img-fluid" />
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${trade.title}"></h5>
+                        <p class="card-text"><span th:text="${trade.info}"></span></p>
+                        <p class="card-text"><span th:text="${#temporals.format(trade.postdate, 'yyyy-MM-dd HH:mm')}"></span></p>
+                        <p class="card-text">작성자: <span th:text="${Writer}"></span></p>
+                        <p class="grade-info">등급: <span th:text="${trade.grade}"></span></p>
+                        <p class="price-info">정가: <span th:text="${trade.originalPrice}"></span>원</p>
+                        <p class="sale-price-info">판매가: <span th:text="${trade.price}"></span>원</p>
+                        <p class="card-text status-info"><span th:text="${trade.status}"></span></p>
+
+                        <div th:if="${username == trade.id}" class="form-group status-form">
+                            <form th:action="@{/trade/updateStatus/{idx}(idx=${trade.idx})}" method="post" style="display: flex; align-items: center;">
+                                <select name="status" class="form-control" style="width: auto; margin-right: 10px;">
+                                    <option value="" th:selected="${trade.status == ''}">판매중</option>
+                                    <option value="예약중" th:selected="${trade.status == '예약중'}">예약중</option>
+                                    <option value="거래완료" th:selected="${trade.status == '거래완료'}">거래완료</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-outline-info">상태 변경</button>
+                            </form>
+                        </div>
+
+                        <div th:if="${username == trade.id}" class="form-group button-group">
+                            <a th:href="@{|/trade/edit/${trade.idx}|}" class="btn btn-sm btn-outline-primary">수정</a>
+                            <a th:href="@{|/trade/delete/${trade.idx}|}" class="delete btn btn-sm btn-outline-secondary" onclick="return confirm('정말로 삭제하시겠습니까?');">삭제</a>
+                        </div>
+
+                        <!-- 채팅하기 버튼: 작성자가 아니고 상태가 거래완료가 아닌 경우에만 보이도록 설정 -->
+                        <div th:if="${username != trade.id}" class="form-group">
+                            <form th:action="@{/trade/chat/create}" method="post" style="display: inline;">
+                                <input type="hidden" name="receiverId" th:value="${trade.id}" />
+                                <input type="hidden" name="tradeIdx" th:value="${trade.idx}" />
+                                <button type="submit" class="btn btn-sm btn-outline-success" th:disabled="${trade.status == '거래완료'}">채팅하기</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body-intro">
+                <p class="intro-text"><span th:text="${trade.intro}"></span></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

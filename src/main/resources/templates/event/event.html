@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+
+<head>
+	<meta charset="UTF-8">
+	<title>온라인 서점 이벤트</title>
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+	<style>
+		.col-md-6 {
+			padding-bottom: 20px;
+		}
+		.preserve-whitespace {
+				white-space: pre-wrap;
+			}
+	</style>
+</head>
+
+<body>
+	<div layout:fragment="content">
+		<h1>이벤트 목록</h1>
+		<p th:text="'안녕하세요, ' + ${username} + '님!'"></p>
+		<div class="row my-3">
+			<div th:each="event : ${events}" class="col-md-6">
+				<div class="card h-100">
+					<a th:href="@{|/event/detail/${event.idx}|}">
+						<img th:src="@{'/image/eventimage/' + ${event.image}}" alt="Event Image" class="card-img-top">
+					</a>
+					<div class="card-body flex-grow-1 d-flex flex-column justify-content-end">
+						<h5 class="card-title" th:text="${event.title}">이벤트 제목</h5>
+						<p class="card-text" th:text="${event.description}">이벤트 설명</p>
+					</div>
+					<div class="card-footer">
+						<small class="text-muted">시작: <span
+								th:text="${#temporals.format(event.startDate, 'yyyy-MM-dd')}">시작 날짜</span></small><br>
+						<small class="text-muted">종료: <span
+								th:text="${#temporals.format(event.endDate, 'yyyy-MM-dd')}">종료 날짜</span></small>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

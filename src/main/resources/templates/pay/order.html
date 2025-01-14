@@ -1,0 +1,168 @@
+<html layout:decorate="~{layout}">
+<head>
+	<title>주문/결제</title>
+</head>
+<!-- 스크립트 블록을 정의 -->
+<th:block layout:fragment="script">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" th:src="@{/js/order-ui.js}"></script>
+    <script type="text/javascript" src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
+</th:block>
+<body>
+  <main layout:fragment="content" class="container" id="container">
+      <h2 class="fw-bold text-center">주문/결제</h2>
+      <br />
+      <br />
+      
+      <!-- 주문 페이지에서 로그인했을때 처리를 할 시간이 남는다면 구현 -->
+      <!-- 
+      <div class="card mb-5 text-bg-light"  sec:authorize="isAnonymous()">
+      	<div class="card-body">
+      		<h3 class="text-center">로그인 후 주문 시 조금 더 편리하게 결제하실 수 있습니다.</h3>
+      		<br>
+      		<div class="mx-auto text-center">      		
+    	  		<a th:href="@{|/user/login|}" class="btn btn-primary">로그인</a>
+	      		<a th:href="@{|/user/signup|}" class="btn btn-outline-primary">회원가입</a>
+      		</div>
+      	</div>
+      </div>
+       -->
+
+      <form method="post" id="orderForm">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h4 class="mb-3">주문 상품</h4>
+            <table class="table table-borderless align-middle text-center">
+              <tbody id="dataArrayList"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card mb-4">
+          <div class="row">
+            <div class="col">
+              <div class="card-body">
+                <h4 class="mb-3">받으실분 정보</h4>
+                <input
+                  type="text"
+                  class="form-control mb-2"
+                  name="name"
+                  id="name"
+                  placeholder="이름을 입력해주세요."
+                  sec:authorize="isAnonymous()"
+                />
+                <input
+                  type="text"
+                  class="form-control mb-2"
+                  name="name"
+                  id="name"
+                  th:value="${name}"
+                  sec:authorize="isAuthenticated()"
+                />
+                
+                <input
+                  type="number"
+                  class="form-control mb-2"
+                  name="phone"
+                  id="phone"
+                  placeholder="휴대폰 번호를 '-'없이 입력해주세요."
+                />
+                <input
+                  type="password"
+                  class="form-control mb-2"
+                  name="pw"
+                  id="pw"
+                  placeholder="주문 조회용 비밀번호를 입력해주세요(영문+숫자 8자리)"
+                  maxlength="8"
+                />
+                <div id="pwFormatError" class="invalid-feedback">
+                  비밀번호는 영문과 숫자를 포함한 8자리로 입력해주세요.
+                </div>
+                <input
+                  type="password"
+                  class="form-control"
+                  name="pw2"
+                  id="pw2"
+                  placeholder="주문 조회용 비밀번호를 한번 더 입력해주세요"
+                  maxlength="8"
+                />
+                <div id="pwError" class="invalid-feedback">
+                  비밀번호가 일치하지 않습니다.
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-body">
+                <h4 class="mb-3">배송 정보</h4>
+                <input
+                  type="text"
+                  id="sample6_postcode"
+                  name="post_code"
+                  placeholder="우편번호"
+                  disabled
+                />
+                <input
+                  type="button"
+                  onclick="sample6_execDaumPostcode()"
+                  class="mb-2"
+                  value="우편번호 찾기"
+                /><br />
+                <input
+                  type="text"
+                  id="sample6_address"
+                  name="address"
+                  class="form-control mb-2"
+                  placeholder="배송지 주소"
+                  disabled
+                />
+                <input
+                  type="text"
+                  id="sample6_detailAddress"
+                  name="detailAddress"
+                  class="form-control mb-2"
+                  placeholder="상세주소"
+                />
+                <select id="options" name="options" class="form-select mb-2">
+                  <option value="" selected>
+                    배송 시 택배기사에게 요청하실 사항을 선택해주세요.(필수 x)
+                  </option>
+                  <option value="문 앞에 놓아주세요">문 앞에 놓아주세요</option>
+                  <option value="부재 시 경비실에 맡겨주세요">
+                    부재 시 경비실에 맡겨주세요
+                  </option>
+                  <option value="부재 시 연락주세요">부재 시 연락주세요</option>
+                  <option value="배송 전 연락주세요">배송 전 연락주세요</option>
+                  <option value="파손의 위험이 있으니 배송 시 주의해 주세요">
+                    파손의 위험이 있으니 배송 시 주의해 주세요
+                  </option>
+                  <!--<option value="directInput">직접 입력</option>-->
+                </select>
+				<!--
+                <input
+                  type="text"
+                  id="customInput"
+                  name="customInput"
+                  class="form-control"
+                  style="display: none"
+                  placeholder="배송 시 택배기사에게 요청하실 사항을 직접 입력해주세요."
+                />
+				-->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom: 20px;">
+          <div class="card-body mx-auto" style="width: 1256px !important">
+            <div class="d-flex justify-content-between">
+              <h4>총 가격: <span id="totalSum" name="totalSum"></span></h4>
+              <button type="button" class="btn btn-primary" id="pay" disabled>
+                결제하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </main>
+</body>
+</html>

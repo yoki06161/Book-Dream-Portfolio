@@ -1,0 +1,53 @@
+<html layout:decorate="~{layout}">
+<head>
+	<title>장바구니 목록</title>
+</head>
+<!-- 스크립트 블록을 정의 -->
+<th:block layout:fragment="script">
+	<script type="text/javascript" th:src="@{/js/basket-ui.js}"></script>
+</th:block>
+<main layout:fragment="content" class="container" id="container">
+	<form action="order">
+		<h2 class="fw-bold text-center">장바구니 목록</h2>
+		<br> <br> <input class="form-check-input" type="checkbox"
+			value="selectall" id="select_all" /> <label id="select_all">&nbsp;전체
+			선택</label>
+		<table class="table align-middle text-center "
+			style="margin-bottom: 80px;">
+			<thead>
+				<tr>
+					<th colspan="7"></th>
+				</tr>
+			</thead>
+			<tbody id="dataArrayList">
+			</tbody>
+			<!--  
+			<tbody th:each = "basket : ${baskets}" sec:authorize="isAuthenticated()">
+				<tr th:each="book : ${books}" th:if="${book.book_id == basket.book_id}">
+					<input type="hidden" th:value=${basket.book_id} name="book_id">
+	                <td><input class="form-check-input" type="checkbox"></td>
+	                <td><img th:src=${book.book_img} alt="상품사진" style="width: 82px; height: 118.34px;"></td>
+	                <td class="text-start"><p class="fs-5 fw-bold" th:text="${book.book_title}"></p>
+	                <p class="fs-6" style="color:gray;" th:text="${book.book_writer}"></p>
+	                <p class="fs-5 price" th:text="${basket.book_price}"></p></td>
+	                <td>
+	                <select></select>
+	                </td>
+	                <td class="result" name="count_price" th:text="${basket.count_price}"></td>
+	                <td><div class="btnClose" aria-label="Close" data-bs-toggle="modal" data-bs-target></div></td>
+				</tr>
+			</tbody>
+			-->
+		</table>
+		<div id="dataNotFound" style="margin-bottom: 80px;"></div>
+		<div class="card fixed-bottom">
+			<div class="card-body mx-auto" style="width: 1280px !important;">
+				<div class="contents d-flex justify-content-between">
+					<h4>총 가격: <span id="totalSum">0</span></h4>
+					<button type="submit" class="btn btn-primary" id="order" disabled>주문하기</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</main>
+</html>

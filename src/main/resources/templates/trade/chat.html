@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<head>
+<title>채팅</title>
+<style>
+body {
+	background-color: #f8f9fa;
+}
+
+.container {
+	background-color: #ffffff;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chat_section {
+	overflow: auto;
+	height: 600px;
+	border: 1px solid #ddd;
+	padding: 10px;
+	position: relative;
+	transition: filter 0.3s ease;
+}
+
+.outgoing_msg {
+	text-align: right;
+}
+
+.received_msg {
+	text-align: left;
+}
+
+.sent_msg, .received_withd_msg {
+	display: inline-block;
+	padding: 10px;
+	border-radius: 10px;
+	margin-bottom: 10px;
+	position: relative;
+}
+
+.sent_msg {
+	background-color: #dcf8c6;
+}
+
+.received_withd_msg {
+	background-color: #f1f0f0;
+}
+
+.time_date {
+	display: block;
+	font-size: 0.8em;
+	color: #999;
+}
+
+.chat_header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.btn-transparent {
+	background-color: transparent;
+	border: none;
+	box-shadow: none;
+	font-size: 1.5em;
+}
+
+.btn-transparent i {
+	font-size: 1.5em;
+}
+
+.chat_header h2 {
+	margin-left: 10px;
+	flex-grow: 1;
+	text-align: center;
+}
+
+.date-separator {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 10px 0;
+}
+
+.date-separator span {
+	background-color: #e9ecef;
+	padding: 5px 10px;
+	border-radius: 10px;
+	font-size: 0.9em;
+	color: #555;
+	display: flex;
+	align-items: center;
+}
+
+.date-separator i {
+	margin-right: 5px;
+}
+
+.input_msg_write {
+	position: relative;
+	display: flex;
+	transition: filter 0.3s ease;
+}
+
+.input_msg_write input[type="file"] {
+	display: none;
+}
+
+.input_msg_write label {
+	cursor: pointer;
+	margin-right: 10px;
+}
+
+.image-preview {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: rgba(255, 255, 255, 0.9);
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	width: 300px;
+	flex-direction: column;
+	z-index: 1000;
+}
+
+.image-preview img {
+	max-width: 200px;
+	margin-bottom: 10px;
+}
+
+.image-preview button {
+	margin: 5px;
+}
+
+.blurred {
+	filter: blur(5px);
+	pointer-events: none;
+}
+
+.unread-badge {
+	border-radius: 50%;
+	padding: 5px 10px;
+	font-size: 0.9em;
+	transform: translateY(-50%);
+	
+}
+
+.outgoing_msg .sent_msg .unread-badge {
+	left: -20px;
+	position: absolute;
+}
+
+.received_msg .received_withd_msg .unread-badge {
+	position: absolute;
+	right: 0; /* 오른쪽에 배치 */
+	transform: translateX(70%); /* 요소의 오른쪽 밖으로 이동 */
+	margin-left: 10px; /* 약간의 여백 추가 */
+	top: 38px;
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<script type="text/javascript">
+var stompClientChat = null;
+var senderId = '[[${senderId}]]';
+var chatRoomId = '[[${chatRoomId}]]';
+var lastMessageDate = null;
+var imageFile = null;
+
+function connectChat() {
+    var socket = new SockJS('/ws');
+    stompClientChat = Stomp.over(socket);
+    stompClientChat.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+        stompClientChat.subscribe('/topic/public', function (messageOutput) {
+            var message = JSON.parse(messageOutput.body);
+            if (message.senderId !== senderId) {
+                setTimeout(function () {
+                    showMessage(message);
+                });
+            } else {
+                showMessage(message);
+            }
+        });
+        fetchChatHistory(); // 초기 채팅 기록 불러오기
+
+        // 사용자 접속 상태를 서버에 알림
+        stompClientChat.send("/app/chat.userJoined", {}, JSON.stringify({ chatRoomId: chatRoomId, userId: senderId }));
+
+        // 새로운 메시지를 읽음 처리
+        stompClientChat.subscribe('/topic/chat/' + chatRoomId, function (messageOutput) {
+            var message = JSON.parse(messageOutput.body);
+            markAsRead(message.id, message.senderId);
+        });
+    });
+}
+
+function sendMessage() {
+    var messageContent = document.getElementById('chat-outgoing-msg').value.trim();
+    if (messageContent && stompClientChat) {
+        var chatMessage = {
+            senderId: senderId,
+            message: messageContent,
+            chatRoomId: chatRoomId,
+            type: 'CHAT'
+        };
+        stompClientChat.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+        document.getElementById('chat-outgoing-msg').value = '';
+    } else if (imageFile && stompClientChat) {
+        var reader = new FileReader();
+        reader.onload = function(event) {
+            var chatMessage = {
+                senderId: senderId,
+                message: event.target.result,
+                chatRoomId: chatRoomId,
+                type: 'IMAGE'
+            };
+            stompClientChat.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+            resetImagePreview();
+            setTimeout(fetchChatHistory);
+        };
+        reader.readAsDataURL(imageFile);
+    }
+}
+
+function resetImagePreview() {
+    imageFile = null;
+    document.querySelector('.image-preview').style.display = 'none';
+    document.querySelector('.image-preview img').src = '';
+    document.getElementById('chat-image-input').value = '';
+    document.querySelector('.chat_section').classList.remove('blurred');
+    document.querySelector('.input_msg_write').classList.remove('blurred');
+}
+
+function showImagePreview(file) {
+    var reader = new FileReader();
+    reader.onload = function(event) {
+        document.querySelector('.image-preview img').src = event.target.result;
+        document.querySelector('.image-preview').style.display = 'flex';
+        document.querySelector('.chat_section').classList.add('blurred');
+        document.querySelector('.input_msg_write').classList.add('blurred');
+    };
+    reader.readAsDataURL(file);
+}
+
+// 메시지를 읽었을 때 호출되는 함수
+function markAsRead(messageId, senderId) {
+    if (stompClientChat && senderId !== userId) {
+        var chatMessage = {
+            id: messageId,
+            chatRoomId: chatRoomId,
+            senderId: senderId
+        };
+        stompClientChat.send("/app/chat.readMessage", {}, JSON.stringify(chatMessage));
+    }
+}
+
+function showMessage(message) {
+    var chatBox = document.getElementById('chat-box');
+    var createdAt = new Date(message.createdAt);
+    if (isNaN(createdAt)) {
+        createdAt = new Date(message.createdAt.replace(' ', 'T')); // 날짜 파싱 수정
+    }
+    var messageDate = createdAt.toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long'
+    });
+
+    if (message.type !== 'LEAVE' && lastMessageDate !== messageDate) {
+        var dateSeparator = document.createElement('div');
+        dateSeparator.classList.add('date-separator');
+        dateSeparator.innerHTML = `
+            <span><i class="fas fa-calendar-alt"></i>${messageDate}</span>
+        `;
+        chatBox.appendChild(dateSeparator);
+        lastMessageDate = messageDate;
+    }
+
+    var messageElement = document.createElement('div');
+    if (message.senderId === senderId) {
+        messageElement.classList.add('outgoing_msg');
+        messageElement.innerHTML = message.type === 'IMAGE' ? `
+            <div class="sent_msg">
+                <img src="${message.message}" alt="image" style="max-width: 100%; height: auto;" />
+                <span class="time_date">${createdAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>
+                ${message.unreadCount > 0 ? `<span class="unread-badge">${message.unreadCount}</span>` : ''}
+            </div>
+        ` : `
+            <div class="sent_msg">
+                <p>${message.message}</p>
+                ${message.type !== 'LEAVE' ? `<span class="time_date">${createdAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>` : ''}
+                ${message.unreadCount > 0 ? `<span class="unread-badge">${message.unreadCount}</span>` : ''}
+            </div>
+        `;
+    } else {
+        messageElement.classList.add('received_msg');
+        messageElement.innerHTML = message.type === 'IMAGE' ? `
+            <div class="received_withd_msg" onclick="markAsRead(${message.id}, '${message.senderId}')">
+                <img src="${message.message}" alt="image" style="max-width: 100%; height: auto;" />
+                <span class="time_date">${createdAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>
+                ${message.unreadCount > 0 ? `<span class="unread-badge">${message.unreadCount}</span>` : ''}
+            </div>
+        ` : `
+            <div class="received_withd_msg" onclick="markAsRead(${message.id}, '${message.senderId}')">
+                <p>${message.message}</p>
+                ${message.type !== 'LEAVE' ? `<span class="time_date">${createdAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>` : ''}
+                ${message.unreadCount > 0 ? `<span class="unread-badge">${message.unreadCount}</span>` : ''}
+            </div>
+        `;
+    }
+    chatBox.appendChild(messageElement);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    connectChat();
+
+    const chatOutgoingButton = document.getElementById('chat-outgoing-button');
+    const chatOutgoingMsg = document.getElementById('chat-outgoing-msg');
+    const chatBox = document.getElementById('chat-box');
+    const chatImageInput = document.getElementById('chat-image-input');
+    const imageSendButton = document.getElementById('chat-image-send');
+    const imageCancelButton = document.getElementById('chat-image-cancel');
+
+    chatOutgoingButton.addEventListener('click', sendMessage);
+
+    chatOutgoingMsg.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    chatImageInput.addEventListener('change', function (event) {
+        imageFile = event.target.files[0];
+        showImagePreview(imageFile);
+    });
+
+    imageSendButton.addEventListener('click', sendMessage);
+    imageCancelButton.addEventListener('click', resetImagePreview);
+
+    const leaveChatButton = document.getElementById('leave-chat-button');
+    leaveChatButton.addEventListener('click', function () {
+        fetch(`/trade/chat/leave?chatRoomId=${chatRoomId}`, {
+            method: 'POST',
+        })
+            .then(response => {
+                if (response.ok) {
+                    stompClientChat.send("/app/chat.userLeft", {}, JSON.stringify({ chatRoomId: chatRoomId, userId: senderId }));
+                    window.location.href = '/trade/chat/rooms';
+                } else {
+                    alert('채팅방 나가기에 실패했습니다.');
+                }
+            });
+    });
+
+    const backButton = document.getElementById('back-button');
+    backButton.addEventListener('click', function () {
+        stompClientChat.send("/app/chat.userLeft", {}, JSON.stringify({ chatRoomId: chatRoomId, userId: senderId }));
+        window.location.href = '/trade/chat/rooms';
+    });
+
+    window.addEventListener('beforeunload', function () {
+        stompClientChat.send("/app/chat.userLeft", {}, JSON.stringify({ chatRoomId: chatRoomId, userId: senderId }));
+    });
+});
+
+function fetchChatHistory() {
+    fetch(`/trade/chat/history?chatRoomId=${chatRoomId}`, {
+        method: 'GET',
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        setTimeout(function() {
+            var chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML = '';
+            data.forEach(chat => {
+                showMessage(chat); // 기존 메시지를 화면에 추가
+            });
+        });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
+</head>
+<body>
+    <div layout:fragment="content" class="container my-3">
+        <div class="chat_header">
+            <button id="back-button" class="btn btn-transparent"
+                data-trade-idx="[[${tradeIdx}]]">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2 style="flex-grow: 1; margin-right: 40px;">채팅하기</h2>
+            <button id="leave-chat-button" class="btn btn-transparent">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+        <div class="card my-3">
+            <div class="card-body">
+                <input type="hidden" id="senderId" value="[[${senderId}]]">
+                <input type="hidden" id="chatRoomId" value="[[${chatRoomId}]]">
+                <div class="container-fluid chat_section" id="chat-box"></div>
+                <div class="type_msg mt-3">
+                    <div class="input_msg_write d-flex">
+                        <label for="chat-image-input" class="btn btn-secondary"> <i
+                            class="fas fa-paperclip"></i>
+                        </label> <input id="chat-image-input" type="file" accept="image/*" /> <input
+                            id="chat-outgoing-msg" type="text" class="form-control write_msg"
+                            placeholder="메세지를 입력하세요" />
+                        <button id="chat-outgoing-button" class="btn btn-primary ml-2"
+                            type="button">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="image-preview">
+                        <img src="" alt="Image preview">
+                        <div>
+                            <button id="chat-image-send" class="btn btn-primary">전송</button>
+                            <button id="chat-image-cancel" class="btn btn-secondary">취소</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

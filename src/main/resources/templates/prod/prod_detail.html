@@ -1,0 +1,216 @@
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+	<title>레이아웃</title>
+	<link rel="stylesheet" th:href="@{/css/prod.css}" type="text/css">
+	<body>
+		<div class="flex_wrap">
+			<input type="hidden" class="book_id" th:value="${book.book_id}">
+			<div>
+				<img th:src="${book.book_img}" />
+			</div>
+			<div class="d_txt_wrap">
+				<h1 th:text="${book.book_title}" class="title"></h1>
+				<span th:text="${book.book_writer}" class="writer"></span>
+				<input th:value="${book.book_price}" class="count" type="hidden">
+				<div class="c_wrap">
+					<div class="pb_wrap">
+						<!--class로하면 js설정하기 귀찮아서 아이디로함-->
+						<!--oninput는 수정 이벤트 인식하는거. 키보드 위아래 입력이 인식되도 updateResult함수가 실행됨-->
+						<input type="number" min="1" max="10" class="bcount" value="1" oninput="updateResult()" />
+						<div class="cb_wrap">
+							<button onclick="add()" class="abtn"></button>
+							<button onclick="min()" class="mbtn"></button>
+						</div>
+					</div>
+					<div>
+						<span>판매가 </span><span class="result"></span><span>원</span>
+					</div>
+				</div>
+				<div class="s_wrap">
+					<span class="scores">
+				        <span class="score on"></span>
+				        <span class="score"></span>
+				        <span class="score"></span>
+				        <span class="score"></span>
+				        <span class="score"></span>
+				    </span>
+				    <span th:text="${score_avg}" id="score_result" class="score_txt"></span>
+					<p th:text="|(${#lists.size(v_list)}명의 평가)|"></p>
+				</div>
+				<div class="b_wrap">
+					<!--session으로 장바구니 여부봐야겠지-->
+					<a href="#" onclick="aa()" class="basket">장바구니</a>
+					<a href="#" class="buy">바로구매</a>
+				</div>
+			</div>
+		</div>
+		<hr>
+		<strong>책소개</strong>
+		<p th:text="${book.book_intro}"></p>
+		<hr>
+	    <strong>별점 남기기</strong>
+		<form th:action="@{|/prod/detail/score/${book.book_id}|}" method="post" class="score_f">
+			<input name="i_score" id="i_score" value="1" type="hidden"/>
+			<div class="star_rating" name="t_score">
+		        <span class="star on" data-value=1></span>
+		        <span class="star" data-value=2></span>
+		        <span class="star" data-value=3></span>
+		        <span class="star" data-value=4></span>
+		        <span class="star" data-value=5></span>
+		    </div>
+			<br>
+			<input type="submit" value="제출" class="score_btn"/>
+		</form>
+		<br>
+		<hr>
+		<strong>리뷰 남기기</strong>
+		<form th:action="@{|write_review/${book.book_id}|}" method="post">
+			<textarea name="w_content" placeholder="지나친 욕설은 자제해주세요." class="w_review"></textarea>
+			<div class="i_wrap">
+				<input type="submit" value="리뷰달기" class="sbtn subbtn" />
+			</div>
+		</form>
+		<!--#lists.sizes는 길이반환하는 메소드.-->
+		<!--th:if는 조건. p_list가 없을경우(댓글이 없을경우) 실행되면 없는걸 가져오려해서 오류뜸.-->
+		<strong th:if="${r_list != null}" th:text="|리뷰(${#lists.size(r_list)})|"></strong>
+		<strong th:if="${r_list == null}" th:text="|리뷰(0)|"></strong>
+		<div th:each="rl:${r_list}" class="re_wrap">
+			<span th:text="${rl.user}"></span> | 
+			<span th:text="${rl.time}"></span>
+			<pre th:text="${rl.review}" class="review_cont"></pre>
+			<div class="ab_wrap">
+				<!--this는 현재 실행중인 함수가 속한 객체?-->
+				<button onclick="show_answer(this)" class="a_btn">답글</button>
+			</div>
+			<div class="answer_wrap">
+				<form th:action="@{|write_answer/${book.book_id}/${rl.id}|}" method="post">
+					<textarea name="a_content" placeholder="지나친 욕설은 자제해주세요." class="w_review"></textarea>
+					<div class="i_wrap2">
+						<input type="submit" value="답글달기" class="sbtn">
+					</div>
+				</form>
+				<!--리스트는 전부 불러오는건데 if로 답변 리뷰 id값과 리뷰 id값이 같은 것만을 출력하게함.-->
+				<div th:each="al : ${a_list}" th:if="${al.review.id == rl.id}" class="a_list">
+					<span th:text="${al.user}"></span> | 
+					<span th:text="${al.time}"></span>
+					<!--{답변테이블.리뷰.리뷰테이블의 속성}으로 하면 리뷰테이블 속성불러오기 가능. 연결돼있으니까.-->
+					<pre th:text="${al.answer}"></pre>
+				</div>
+			</div>
+		</div>
+	</body>
+	
+	<script th:inline="javascript" type="text/javascript"  th:src="@{/js/common-ui.js}"></script>
+	<script th:inline="javascript">
+	   // book.book_price를 js 변수로 변환. /*는 주석이 아니라 /*.[[로 th템플릿 속성이랜다.
+	    let price = /*[[${book.book_price}]]*/ '0'; // 초기값 '0' 설정
+	    
+	    // ,제거 후 실수로 변환. ,가 찾을 문자. g는 전역 검색을 뜻. 모든 ','을 ''로 바꾸겠단 뜻
+	    price = parseFloat(price.replace(/,/g, ''));
+	    
+		// 인풋값
+	    let input = document.querySelector('.bcount');
+		// 총가격
+	    let result = document.querySelector('.result');
+
+	    function add() {
+			// input.value값 숫자로. 원본은 문자형식임.
+			input.value = parseInt(input.value) + 1;
+			
+			// input값이 nan인 경우
+			let inputValue = parseInt(input.value);
+			// input.value는 문자형이라 숫자만 비교하는 nan으로 쓰면 실행 안됨.
+			if(isNaN(inputValue)) {
+				input.value = 1;
+			}
+			
+	        updateResult();
+	    }
+
+	    function min() {
+			input.value = parseInt(input.value) - 1;
+	        updateResult();
+	    }
+
+	    function updateResult() {
+	      let inputValue = parseInt(input.value); // 입력값을 정수형으로 변환
+		  	// min과 max로는 버튼 이벤트가 안막힌다.
+		  	if (inputValue < 1) inputValue = 1; // 최소값 이하로 내려가지 않도록 보정
+          	if (inputValue > 10) inputValue = 10; // 최대값 이상으로 올라가지 않도록 보정
+            input.value = inputValue; // 보정된 값을 다시 input에 설정
+	        
+	        let total = parseInt(input.value) * price;
+	        result.textContent = total.toLocaleString();
+			
+			// 인풋값에 아무것도 없으면 NAN이 떠서 아무것도 안뜨게 만드는 용.
+			if(isNaN(total)) {
+				result.textContent = "";
+			} else {
+			    result.textContent = total.toLocaleString();
+			}
+	    }
+		
+		function show_answer(button) {
+			// parentElement는 직계 부모 요소. 버튼의 바로 위 부모 요소
+			// 버튼의 조상 요소 중 .re_wrap을 찾습니다.
+		    let reWrap = button.closest('.re_wrap');
+		    
+			// 부모요소를 찾고 부모요소에 속한 answer_wrap을 찾음. 즉 div th:each="rl:${r_list}" > .answer_wrap임 
+		    // 찾은 .re_wrap 요소에서 .answer_wrap을 찾습니다.
+		    let a_wrap = reWrap.querySelector('.answer_wrap');
+
+		    if (a_wrap) {
+		        // 요소의 display 속성에 따라 보이기/숨기기
+		        if (a_wrap.style.display === 'block') {
+		            a_wrap.style.display = 'none'; // 보이는 상태면 숨기기
+		        } else {
+		            a_wrap.style.display = 'block'; // 숨겨진 상태면 보이기
+		        }
+		    } else {
+		        console.error('answer_wrap element not found');
+		    }
+		}
+
+		// 별점 넣기
+		// .star_rating 클래스 하위에 있는 모든 .star 요소들 선택
+		document.querySelectorAll('.star_rating .star').forEach(star => {
+	        star.addEventListener('click', function() {
+	            // 모든 별표시 초기화
+	            document.querySelectorAll('.star_rating .star').forEach(star => {
+	                star.classList.remove('on');
+	            });
+
+				
+				let clickedValue = parseInt(this.getAttribute('data-value'));
+				// 클릭된 별에 온클래스 걸어서 색깔 변하게.
+				for (let i = 1; i <= clickedValue; i++) {
+	                document.querySelector(`.star_rating .star[data-value="${i}"]`).classList.add('on');
+	            }
+
+	            // i_score 인풋에 별점 값 넣기
+	            let value = this.getAttribute('data-value');
+	            document.getElementById('i_score').value = value;
+	        });
+	    });
+		
+		// 이미 평가된 별점 색깔
+		document.addEventListener('DOMContentLoaded', function() {
+	        // score_avg 값 가져오기
+	        var scoreAvg = parseInt(document.getElementById('score_result').textContent.trim());
+
+	        // scores 요소의 자식 요소들(span.score)을 가져와서 배열로 변환
+	        var scoreElements = Array.from(document.querySelectorAll('.s_wrap .scores .score'));
+			
+	        // score_avg 값에 따라 on 클래스를 적용
+	        for (var i = 0; i < scoreAvg; i++) {
+	            scoreElements[i].classList.add('on');
+	        }
+	    });
+		
+	    // 페이지 로드 시 초기 결과값 설정
+	   // 없는게 나은거같다
+	    updateResult();
+	</script>
+
+</div>
+</html>

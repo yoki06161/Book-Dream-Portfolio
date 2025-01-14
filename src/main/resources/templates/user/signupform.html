@@ -1,0 +1,73 @@
+<html layout:decorate="~{layout}">
+<head>
+	<title>회원가입</title>
+</head>
+<div layout:fragment="content" class="container"
+	style="display: flex; flex-flow: column; align-items: center;">
+	<a href="/"><img th:src="@{/image/logo.png}" alt="로고"
+		style="margin-bottom: 20px; height: 60px; width: 100px;"></a>
+	<div
+		style="display: flex; flex-flow: column; align-items: center; width: 450px; padding-bottom: 20px; border: 1px solid #6f6f6f; border-radius: 20px;">
+		<div class="my-3">
+			<h5 style="margin-bottom: 0px;font-weight: 700;color:#6f6f6f;">회원가입</h5>
+		</div>
+
+		<form th:action="@{/user/signup}" th:object="${userCreateForm}"
+			method="post"
+			style="margin-bottom: 20px; padding-bottom: 30px; border-bottom: 1px solid #6f6f6f;position: relative;">
+
+
+			<div class="input_box">
+				<div>
+					<input type="text" th:field="*{email}"
+						placeholder="아이디를 입력해주세요. email@example.com"
+						style="height: 50px; width: 350px; padding-left: 10px; border: 1px solid #6f6f6f; border-bottom: none; border-radius: 10px 10px 0 0;"
+						required="required">
+				</div>
+				<div>
+					<input type="password" th:field="*{password1}"
+						placeholder="비밀번호를 입력해주세요."
+						style="height: 50px; width: 350px; padding-left: 10px; border: 1px solid #6f6f6f; border-bottom: none;"
+						required="required">
+				</div>
+				<div>
+					<input type="password" th:field="*{password2}"
+						placeholder="비밀번호를 확인해주세요."
+						style="height: 50px; width: 350px; padding-left: 10px; border: 1px solid #6f6f6f; border-bottom: none;"
+						required="required">
+				</div>
+				<div>
+					<input type="text" th:field="*{username}" placeholder="이름을 입력해주세요."
+						style="height: 50px; width: 350px; padding-left: 10px; border: 1px solid #6f6f6f;"
+						required="required">
+				</div>
+			</div>
+			<input type="submit" value="회원가입" class="btn btn-primary"
+				style="width: 350px; height: 46px; border-color: #6f6f6f; background-color: #6f6f6f; border-radius: 0 0 10px 10px;font-weight: 700;">
+			<div role="alert" th:if="${#fields.hasAnyErrors()}" style="padding-top:5px;">
+				<span><strong th:each="err : ${#fields.allErrors()}"
+					th:text="${err}"
+					style="display: block; font-size: 14px; color: #DF0101; width: 350px;"></strong></span>
+			</div>
+			<div style="position: absolute;bottom:-12px;left:100px;background-color: #fff;width:150px;text-align: center"><span style="font-weight: 700;color:#6f6f6f;">3초 회원가입!</span></div>
+		</form>
+
+		<div style="display: flex;gap:20px;">
+			<a href="/oauth2/authorization/google"
+				style="display: block;width: 80px; height: 80px;border-radius:50px;overflow: hidden;"> <img
+				th:src="@{/image/web_light_rd_na@4x.png}" alt="구글 로그인 버튼"
+				style="width: 80px; height: 80px;" />
+			</a> <a href="/oauth2/authorization/kakao"
+				style="display: block;width: 80px; height: 80px; display: flex; flex-flow: column; align-items: center; background-color: #FEE500; border-radius: 50px; overflow: hidden;">
+				<img th:src="@{/image/kakao_login_large_narrow.png}"
+				alt="카카오 로그인 버튼" style="width: 100%;height: 100%;object-fit: none;object-position: -5px -3px;" />
+			</a> <a href="/oauth2/authorization/naver"
+				style="display: block; width: 80px; height: 80px; display: flex; flex-flow: column; align-items: center; border-radius: 50px; overflow: hidden;">
+				<img th:src="@{/image/btnG_naver_circle.png}" alt="네이버 로그인 버튼"
+				style="width: 80px; height: 80px;" />
+			</a>
+		</div>
+
+	</div>
+</div>
+</html>

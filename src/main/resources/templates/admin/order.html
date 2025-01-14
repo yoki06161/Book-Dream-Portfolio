@@ -1,0 +1,36 @@
+<html layout:decorate="~{admin_layout}">
+<head>
+	<title>북드림 주문 관리</title>
+</head>
+<body>
+	<div layout:fragment="content" class="container">
+		<h2 class="text-center mb-4 fw-bold">주문 현황</h2>
+		<table class="table table-bordered table-hover text-center align-middle">
+			<thead>
+				<tr class="table-active">
+					<th scope="col">결제 ID</th>
+					<th scope="col">이름</th>
+					<th scope="col">주소</th>
+					<th scope="col">우편번호</th>
+					<th scope="col">결제 금액</th>
+					<th scope="col">주문 일자</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each = "pay : ${pays}" >
+					<td>
+						<a th:href="@{|order/${pay.pay_id}|}"  th:text = "${pay.pay_id}">
+						</a>
+					</td>
+					<td th:text = "${pay.name}"/></td>
+					<td th:text = "${pay.address}"></td>
+					<td th:text = "${pay.post_code}"></td>
+					<td th:text = "${pay.total_price}"></td>
+					<td th:text = "${#temporals.format(pay.order_date, 'yyyy-MM-dd HH:mm:ss')}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+</body>
+</html>

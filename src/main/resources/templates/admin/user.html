@@ -1,0 +1,33 @@
+<html layout:decorate="~{admin_layout}">
+<head>
+	<title>북드림 회원 관리</title>
+</head>
+<body>
+	<div layout:fragment="content" class="container">
+		<h2 class="text-center mb-4 fw-bold">회원 관리</h2>
+		<table class="table table-bordered table-hover text-center">
+			<thead>
+				<tr class="table-active">
+					<th scope="col">인덱스</th>
+					<th scope="col">이름</th>
+					<th scope="col">이메일</th>
+					<th scope="col">역할</th>
+					<th scope="col">가입일자</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each = "user : ${users}" >
+					<td th:text = "${user.id}"></td>
+					<td>
+						<a th:href="@{|user/${user.id}|}" th:text= "${user.username}">
+						</a>
+					</td>
+					<td th:text = "${user.email}"></td>
+					<td th:text = "${user.role}"></td>
+					<td th:text = "${#temporals.format(user.create_date, 'yyyy-MM-dd HH:mm:ss')}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

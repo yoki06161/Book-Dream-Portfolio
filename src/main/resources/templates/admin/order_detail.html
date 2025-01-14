@@ -1,0 +1,48 @@
+<html layout:decorate="~{admin_layout}">
+<head>
+	<title>주문/결제내역 상세보기</title>
+</head>
+<link href="Content/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+	<div layout:fragment="content" class="container">
+		<h2 class="text-center mb-5 fw-bold">주문/결제내역 상세보기</h2>
+		<div class="mb-3">
+	          <h4 class="mb-3">주문 상품(주문번호 <span id="pay_id" th:text="${pay.pay_id}"></span>)</h4>
+	          <table class="table table-borderless align-middle text-center">
+	          	<tbody th:each="orders : ${orders}">
+		            <tr th:each="book : ${books}" th:if="${book.book_id == orders.book_id}">
+				        <td><img th:src="${book.book_img}" alt="상품사진" style="width: 82px; height: 118.34px;"></td>
+				        <td class="text-start">
+				        	<p class="fs-5 fw-bold" th:text="${book.book_title}"></p>
+				        	<p class="fs-6" style="color:gray;" th:text="${book.book_writer}"></p>
+				            <p class="fs-5" th:text="${book.book_price}"></p>
+				         </td>
+				        <td><span th:text="${orders.count}"></span>권</td>
+				        <td th:text="${orders.count_price}"></td>
+		            </tr>
+	          	</tbody>
+	          </table>
+	      </div>
+	        <div class="row">
+	          <div class="col">
+	              <h4 class="mb-3">주문자 정보</h4>
+	              <p>이름: <span id="name" th:text="${pay.name}"></span></p>
+	              <p>휴대폰 번호: <span id="phone" th:text="${pay.phone}"></span></p>
+	              <p>주문 조회용 비밀번호: <span id="pw" th:text="${pay.pw}"></span></p>
+	          </div>
+	          <div class="col">
+	              <h4 class="mb-3">배송 정보</h4>
+	              <p>우편번호: <span th:text="${pay.post_code}"></span></p>
+	              <p>배송주소: <span th:text="${pay.address}"></span></p>
+	              <p>배송요청사항: <span th:text="${pay.request}"></span></p>
+	          </div>
+	        </div>
+	        <br>
+	        <h4>총 가격: <span th:text="${pay.total_price}">0</span></h4>
+		    <br>
+		    <a th:href="@{|/admin/order|}" class="btn btn-secondary">주문 현황 목록</a>
+	     </div>
+	</div>
+</body>
+</html>

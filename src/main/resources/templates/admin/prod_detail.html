@@ -1,0 +1,21 @@
+<html layout:decorate="~{admin_layout}">
+<head>
+	<title>북드림 서적 상세정보</title>
+</head>
+<body>
+	<div layout:fragment="content" class="container">
+			<div class="fs-6">
+				<h2 class="text-center mb-5 fw-bold">서적 정보 상세보기</h2>
+				<img th:src = "${book.book_img}" style="width: 82px; height: 118.34px;"/>
+				<br>
+				<br>
+				<p>장르: <span th:text = "${book.book_genre}"></span></p>
+				<p>서적명: <span th:text = "${book.book_title}"></span></p>
+				<p>가격: <span th:text = "${book.book_price}"></span></p>
+				<p>서적 정보: <span th:text = "${book.book_writer}"></span></p>
+				<p>서적 소개: <span th:text = "${book.book_intro}"></span></p>	<br>
+				<a th:href="@{|/admin/prod|}" class="btn btn-secondary">서적 목록</a>
+			</div>
+	</div>
+</body>
+</html>

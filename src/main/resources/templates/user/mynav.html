@@ -1,0 +1,9 @@
+<nav th:fragment="headerfragment" style="margin-top:50px;font-size:17px;font-weight: 700;">
+    <div class="list-group" style="min-width: 170px;">
+        <a id="linkUserUp" class="list-group-item list-group-item-action" style="border-color:#afafaf;" th:href="@{|/user/userinfo|}">사용자 정보</a>
+        <a id="linkUserUp" class="list-group-item list-group-item-action" style="border-color:#afafaf;" th:href="@{|/user/modifynameform|}">사용자 이름 변경</a>
+        <a id="linkUserUp" class="list-group-item list-group-item-action" style="border-color:#afafaf;" th:href="@{|/user/modifypwform|}">비밀번호 변경</a>
+        <a id="linkUserDel" class="list-group-item list-group-item-action" style="border-color:#afafaf;" th:href="@{|/user/userdel|}">회원 탈퇴</a>
+        <a id="linkBuy" class="list-group-item list-group-item-action" style="border-color:#afafaf;" th:href="@{|/user/userbuy|}">주문 내역</a>
+    </div>
+</nav>

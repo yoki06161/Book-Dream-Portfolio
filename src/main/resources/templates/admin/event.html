@@ -1,0 +1,32 @@
+<html layout:decorate="~{admin_layout}">
+<head>
+	<title>북드림 이벤트 관리</title>
+</head>
+<body>
+	<div layout:fragment="content" class="container">
+		<h2 class="text-center mb-4 fw-bold">이벤트 관리</h2>
+		<table class="table table-bordered table-hover text-center">
+			<thead>
+				<tr class="table-active">
+					<th scope="col">인덱스</th>
+					<th scope="col">이벤트 제목</th>
+					<th scope="col">시작일</th>
+					<th scope="col">종료일</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each = "event : ${events}" >
+					<td th:text = "${event.idx}"></td>
+					<td>
+						<a th:href="@{|event/${event.idx}|}" th:text = "${event.title}">
+						</a>
+					</td>
+					<td th:text = "${#temporals.format(event.startDate, 'yyyy-MM-dd')}"></td>
+					<td th:text = "${#temporals.format(event.endDate, 'yyyy-MM-dd')}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+</body>
+</html>

@@ -1,0 +1,54 @@
+<html layout:decorate="~{layout}">
+<head>
+	<title>로그인</title>
+</head>
+<div layout:fragment="content"
+	style="display: flex; flex-flow: column; align-items: center;margin-top:70px !important;margin-bottom:84px !important;">
+	<a href="/"><img th:src="@{/image/logo.png}" alt="로고" style="margin-bottom:20px;height:60px;width:100px;"></a>
+	<div
+		style="width: 350px; padding-bottom: 30px; border: 1px solid #6f6f6f; border-radius: 30px; overflow: hidden; display: flex; flex-flow: column; align-items: center;">
+		<div class="my-3">
+			<div>
+				<h5 style="text-align: center; margin-bottom: 0px;font-weight: 700;color:#6f6f6f;">로그인</h5>
+			</div>
+		</div>
+		<form th:action="@{|/user/login|}" method="post"
+			style="border-bottom: 1px solid #6f6f6f; margin-bottom: 20px;">
+
+			<div th:if="${param.error}" style="padding-left: 5px;">
+				<small style="color: #DF0101; font-weight: 700;">사용자 ID,
+					비밀번호를 확인해주세요.</small>
+			</div>
+
+			<div>
+				<input type="text" name="username"
+					placeholder="사용자ID email@example.com" required="required"
+					style="height: 50px; width: 250px;; border: 1px solid #6f6f6f; border-radius: 10px 10px 0 0; border-bottom: none; padding: 10px;">
+			</div>
+			<div>
+				<input type="password" name="password" placeholder="비밀번호"
+					required="required"
+					style="height: 50px; width: 250px; border: 1px solid #6f6f6f; padding: 10px;">
+			</div>
+
+			<input type="submit" value="로그인" class="btn btn-primary"
+				style="height: 46px; width: 250px; background-color: #6f6f6f; border-color: #6f6f6f; border-radius: 0 0 10px 10px; margin-bottom: 20px; font-weight: 700;">
+		</form>
+		<div>
+			<a href="/oauth2/authorization/google"
+				style="display: block; margin-bottom: 10px; width: 250px;"> <img
+				th:src="@{/image/web_light_sq_SI@4x.png}" alt="구글 로그인 버튼"
+				style="width: 250px; height: 50px;" />
+			</a> <a href="/oauth2/authorization/kakao"
+				style="display: block; margin-bottom: 10px; width: 250px; display: flex; flex-flow: column; align-items: center; background-color: #FEE500; border-radius: 5px; overflow: hidden;">
+				<img th:src="@{/image/kakao_login_medium_narrow.png}"
+				alt="카카오 로그인 버튼" style="width: 200px; height: 50px;" />
+			</a> <a href="/oauth2/authorization/naver"
+				style="display: block; width: 250px; background-color: #03C75A; display: flex; flex-flow: column; align-items: center; border-radius: 5px; overflow: hidden;">
+				<img th:src="@{/image/btnG_naver.png}" alt="네이버 로그인 버튼"
+				style="width: 200px; height: 50px;" />
+			</a>
+		</div>
+	</div>
+</div>
+</html>

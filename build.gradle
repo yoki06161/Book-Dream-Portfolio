@@ -1,0 +1,59 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.1'
+	id 'io.spring.dependency-management' version '1.1.5'
+}
+
+// -parameters 플래그 제대로 설정
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-parameters"
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // Spring Boot Thymeleaf 스타터를 추가합니다.
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect' // Thymeleaf Layout Dialect를 추가합니다.
+    implementation 'org.springframework.boot:spring-boot-starter-web' // Spring Boot 웹 스타터를 추가합니다.
+    implementation 'org.springframework.boot:spring-boot-starter-websocket' // Spring Boot WebSocket 스타터 추가
+    compileOnly 'org.projectlombok:lombok' // 컴파일 시에만 사용할 Lombok 라이브러리를 추가합니다.
+    annotationProcessor 'org.projectlombok:lombok' // Lombok의 애노테이션 프로세서를 추가합니다.
+    implementation 'com.mysql:mysql-connector-j:8.0.33' // MySQL 데이터베이스와 연결
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Boot JPA 스타터를 추가합니다.
+    implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Boot Security 스타터를 추가합니다.
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6' // Thymeleaf Spring Security 6 확장을 추가합니다.
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot 테스트 스타터를 테스트 의존성으로 추가합니다.
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // JUnit 플랫폼 런처를 테스트 런타임 의존성으로 추가합니다.
+    implementation 'org.jsoup:jsoup:1.15.3' // 정적 크롤링할때 필요함
+    implementation 'org.seleniumhq.selenium:selenium-java:4.1.2' // 동적 크롤링
+    implementation 'com.google.code.gson:gson' // gson 카카오 로그인 사용
+    implementation 'org.springframework.boot:spring-boot-devtools' // 애플리케이션의 자동 재시작, 빠른 리로드 및 기타 개발 편의 기능을 제공합니다.
+	implementation 'org.springframework.boot:spring-boot-starter-validation' // 애플리케이션에서 유효성 검사를 쉽게 수행할 수 있도록 지원하는 의존성입니다.
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // 카카오 로그인 oauth2
+	testImplementation 'org.springframework.security:spring-security-test'
+	implementation 'org.springframework.boot:spring-boot-starter-mail' // 이메일 사용
+	implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'	  // 아임포트 결제 api 사용
+	implementation 'org.springframework.boot:spring-boot-starter-json'    // 결제 취소를 위한 프록시 서버 사용
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

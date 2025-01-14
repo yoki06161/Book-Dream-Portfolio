@@ -1,0 +1,20 @@
+<html layout:decorate="~{admin_layout}">
+<head>
+	<title>북드림 회원 상세정보 수정</title>
+</head>
+<body>
+	<div layout:fragment="content" class="container">
+			<form class="fs-6 position-absolute top-50 start-50 translate-middle" th:action="@{|/admin/user/update/${user.id}|}" method="post">
+				<h2 class="text-center mb-5 fw-bold">회원 상세정보 수정</h2>
+				<p>이름: <span th:text = "${user.username}"></span></p>
+				<p>이메일: <input type="text" th:value = "${user.email}" th:name="email"></p>
+				<p>패스워드: <span th:text = "${user.password}"></span></p>
+				<p>역할: <input type="text" th:value = "${user.role}" th:name="role"></p>
+				<p>가입날짜: <span th:text = "${#temporals.format(user.create_date, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+				<br>
+				<input type="submit" value="수정완료" class="btn btn-secondary">
+				<a th:href="@{|/admin/user/${user.id}|}" class="btn btn-secondary">수정 취소</a>
+			</form>
+	</div>
+</body>
+</html>

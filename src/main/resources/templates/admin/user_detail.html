@@ -1,0 +1,23 @@
+<html layout:decorate="~{admin_layout}">
+<head>
+	<title>북드림 회원 상세정보</title>
+</head>
+<body>
+	<div layout:fragment="content" class="container">
+			<div class="fs-6 position-absolute top-50 start-50 translate-middle">
+				<h2 class="text-center mb-5 fw-bold">회원 정보 상세보기</h2>
+				<p>이름: <span th:text = "${user.username}"></span></p>
+				<p>이메일: <span th:text = "${user.email}"></span></p>
+				<p>패스워드: <span th:text = "${user.password}"></span></p>
+				<p>역할: <span th:text = "${user.role}"></span></p>
+				<p>가입날짜: <span th:text = "${#temporals.format(user.create_date, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+				<br>
+				<a th:href="@{|/admin/user|}" class="btn btn-secondary">회원 목록</a>
+				<a th:href="@{|/admin/user/update/${user.id}|}" class="btn btn-secondary">수정</a>
+				<form th:action="@{/admin/user/delete/{id}(id=${user.id})}" method="post" style="display:inline;">
+    				<button type="submit" class="btn btn-secondary">삭제</button>
+				</form>
+			</div>
+	</div>
+</body>
+</html>

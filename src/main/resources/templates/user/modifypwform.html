@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<head>
+	<title>비밀번호 변경</title>
+</head>
+<div layout:fragment="content" style="display: flex;margin-top:70px !important;margin-bottom:345px !important;">
+	<div style="width: 230px; padding: 0 10px">
+		<nav th:replace="~{user/mynav :: headerfragment}"></nav>
+	</div>
+	<div class="main-content" style="width: 1000px; padding-left: 50px">
+		<h3 style="font-weight: 700; color: #6f6f6f;">비밀번호 변경</h3>
+		<hr>
+
+		<!-- 소셜 로그인 사용자는 폼을 보지 못하고 메시지만 봅니다 -->
+		<div th:if="${!isSocialLogin}">
+			<form th:action="@{|/user/modifypwform|}" method="post"
+				th:object="${userModifyPwForm}">
+				<div style="margin-bottom: 10px;">
+					<span style="display: block; font-size: 14px; margin-bottom: 10px;"><strong>보안을
+							위해 주기적으로 비밀번호를 변경해주세요.</strong></span>
+					<div>
+						<input type="password" th:field="*{currentPassword}"
+							placeholder="현재 비밀번호를 입력해주세요."
+							style="height: 42px; width: 300px; padding-left: 10px; border: 1px solid #afafaf; border-bottom: none; border-radius: 5px 5px 0 0;">
+					</div>
+					<div>
+						<input type="password" th:field="*{newPassword1}"
+							placeholder="새 비밀번호를 입력해주세요."
+							style="height: 42px; width: 300px; padding-left: 10px; border: 1px solid #afafaf; border-bottom: none;">
+					</div>
+					<div style="display: flex">
+						<input type="password" th:field="*{newPassword2}"
+							placeholder="새 비밀번호를 확인해주세요."
+							style="height: 42px; width: 300px; padding-left: 10px; border: 1px solid #afafaf; border-radius: 0 0 0 5px;">
+						<button type="submit" class="btn btn-primary"
+							style="background-color: #6f6f6f; border-color: #6f6f6f; height: 42px; border-radius: 0 5px 5px 0; font-weight: 700;">변경하기</button>
+					</div>
+				</div>
+				<div>
+					<p th:if="${#fields.hasErrors('currentPassword')}"
+						th:errors="*{currentPassword}"
+						style="padding-left: 10px; color: red; font-weight: 700; font-size: 14px;" />
+					<p th:if="${#fields.hasErrors('newPassword1')}"
+						th:errors="*{newPassword1}"
+						style="padding-left: 10px; color: red; font-weight: 700; font-size: 14px;" />
+					<p th:if="${#fields.hasErrors('newPassword2')}"
+						th:errors="*{newPassword2}"
+						style="padding-left: 10px; color: red; font-weight: 700; font-size: 14px;" />
+				</div>
+			</form>
+		</div>
+
+		<!-- 소셜 로그인 사용자는 이 메시지를 봅니다 -->
+		<div th:if="${isSocialLogin}">
+			<span style="display: block; font-size: 14px; margin-bottom: 5px;"><strong
+				style="color: red;">소셜 로그인은 비밀번호 변경이 불가합니다.</strong></span>
+		</div>
+	</div>
+</div>
+</html>
