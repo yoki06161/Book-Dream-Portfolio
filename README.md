@@ -104,13 +104,19 @@
 ## 화면 예시
 
 - **중고 서적 목록**
-
+![프로젝트 리스트](https://github.com/user-attachments/assets/403c36d5-f502-4c1a-b5cb-f47447bafbcf)
   - 검색, 페이지네이션, 판매 상태 표시
+
+- **책 등록**
+![프로젝트 상품 등록](https://github.com/user-attachments/assets/46a505f3-b932-4388-91eb-c682622d2021)
+  - 책 등록
+
 - **책 상세 보기**
-
+![프로젝트 상세보기](https://github.com/user-attachments/assets/b7c9ebd7-b3f3-4bcc-a58c-9645d7bab1a7)
   - “채팅하기” 버튼, 상태 변경(작성자), 등급/가격 표시  
-- **실시간 채팅**
 
+- **실시간 채팅**
+![프로젝트 채팅](https://github.com/user-attachments/assets/17e84c83-84fe-4aca-8d91-18edfdcf6819)
   - 메시지 송수신, 이미지 미리보기, 읽음 처리, 메시지 시간 표시
 
 <br/>
