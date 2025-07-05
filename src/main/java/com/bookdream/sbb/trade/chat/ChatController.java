@@ -1,6 +1,8 @@
 package com.bookdream.sbb.trade.chat;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -14,22 +16,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Controller
 @RequestMapping("/trade/chat")
+@RequiredArgsConstructor
 public class ChatController {
 
-    @Autowired
-    private ChatService chatService;
+    private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
 
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    private final ChatService chatService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/history")
     @ResponseBody
@@ -72,14 +74,21 @@ public class ChatController {
     }
 
     @PostMapping("/create")
-    public String createChatRoom(@RequestParam("receiverId") String receiverId, @RequestParam("tradeIdx") int tradeIdx, Principal principal) {
+    public String createChatRoom(@RequestParam("receiverId") String receiverId,
+                                 @RequestParam("tradeIdx") int tradeIdx,
+                                 Principal principal,
+                                 RedirectAttributes redirectAttributes) {
         if (principal == null) {
             return "redirect:/user/login";
         }
 
         String senderId = principal.getName();
         ChatRoom chatRoom = chatService.createChatRoom(senderId, receiverId, tradeIdx);
-        return "redirect:/trade/chat/start?tradeIdx=" + tradeIdx + "&chatRoomId=" + chatRoom.getId();
+
+        redirectAttributes.addAttribute("tradeIdx", tradeIdx);
+        redirectAttributes.addAttribute("chatRoomId", chatRoom.getId());
+
+        return "redirect:/trade/chat/start";
     }
 
     @PostMapping("/leave")
@@ -125,7 +134,14 @@ public class ChatController {
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/public")
     public Chat addUser(Chat chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-        headerAccessor.getSessionAttributes().put("username", chatMessage.getSenderId());
+        Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
+
+        // 2. null이 아닌지 확인 후 put 호출
+        if (sessionAttributes != null) {
+            sessionAttributes.put("username", chatMessage.getSenderId());
+        } else {
+            logger.warn("WebSocket session attributes not found for user: {}", chatMessage.getSenderId());
+        }
         return chatMessage;
     }
 

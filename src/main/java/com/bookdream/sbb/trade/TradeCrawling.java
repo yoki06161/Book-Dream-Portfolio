@@ -10,11 +10,14 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TradeCrawling {
 
+    private static final Logger logger = LoggerFactory.getLogger(TradeCrawling.class);
     private static final String URL = "https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=";
 
     public List<Trade> searchBooks(String keyword) {
@@ -29,12 +32,12 @@ public class TradeCrawling {
                 String details = "Unknown"; // 기본값 설정
                 
                 Elements detailElements = book.select("li:contains(지은이)");
-                if (detailElements.size() > 0) {
+                if (!detailElements.isEmpty()) {
                     details = detailElements.get(0).text(); // 저자, 옮긴이, 출판사 정보
                 }
                 String priceText = "0"; // 기본값 설정
                 Elements priceElements = book.select("li span.ss_p2 b span");
-                if (priceElements.size() > 0) {
+                if (!priceElements.isEmpty()) {
                     priceText = priceElements.get(0).text(); // 가격 정보
                 }
                 
@@ -50,7 +53,7 @@ public class TradeCrawling {
                 trades.add(trade);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("알라딘 도서 정보 크롤링 중 오류 발생. Keyword: {}", keyword, e);
         }
         return trades;
     }

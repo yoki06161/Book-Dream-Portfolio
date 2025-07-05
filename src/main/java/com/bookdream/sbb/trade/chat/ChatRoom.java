@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+import com.bookdream.sbb.util.DateUtils;
 
 @Entity
 @Getter
@@ -28,7 +29,7 @@ public class ChatRoom {
 
     @Column(nullable = false, columnDefinition = "int default 0")
     private int newMessagesCountForReceiver = 0;
-    
+
     private String opponentUsername;
 
     private String lastMessageSenderId;
@@ -64,11 +65,11 @@ public class ChatRoom {
             return newMessagesCountForSender;
         }
     }
-    
+
     public String getFormattedLastMessageTime() {
         return DateUtils.formatDateTime(lastMessageTime);
     }
-    
+
     public String getOpponentId(String userId) {
         return userId.equals(this.senderId) ? this.receiverId : this.senderId;
     }

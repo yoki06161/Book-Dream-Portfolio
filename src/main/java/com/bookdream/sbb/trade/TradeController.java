@@ -1,12 +1,14 @@
 package com.bookdream.sbb.trade;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStream;
@@ -19,13 +21,14 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping("/trade")
+@RequiredArgsConstructor
 public class TradeController {
 
-    @Autowired
-    private TradeService tradeService;
+    private static final Logger logger = LoggerFactory.getLogger(TradeController.class);
 
-    @Autowired
-    private TradeCrawling tradeCrawling;
+    private final TradeService tradeService;
+    private final TradeCrawling tradeCrawling;
+
 
     private final String uploadDir = "C:/Users/TJ/git/Book-Dream/src/main/resources/static/image/";
 
@@ -61,9 +64,8 @@ public class TradeController {
             tradeService.updateTrade(idx, trade);
             redirectAttributes.addFlashAttribute("successMsg", "상태가 성공적으로 변경되었습니다!");
         } catch (Exception e) {
-            System.out.println("Exception occurred while updating status: " + e.getMessage());
-            e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMsg", "상태 변경 실패: " + e.getMessage());
+            logger.error("상태 업데이트 중 오류 발생. idx: {}, status: {}", idx, status, e);
+            redirectAttributes.addFlashAttribute("errorMsg", "상태 변경에 실패했습니다.");
         }
         return "redirect:/trade/detail/" + idx;
     }
@@ -102,9 +104,8 @@ public class TradeController {
             redirectAttributes.addFlashAttribute("successMsg", "상품 등록 성공!!");
             return "redirect:/trade/list";
         } catch (Exception e) {
-            System.out.println("Exception occurred while creating trade: " + e.getMessage());
-            e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMsg", "상품 등록 실패: " + e.getMessage());
+            logger.error("상품 등록 중 오류 발생. 사용자: {}", principal.getName(), e);
+            redirectAttributes.addFlashAttribute("errorMsg", "상품 등록에 실패했습니다.");
             return "redirect:/trade/create";
         }
     }
@@ -132,7 +133,9 @@ public class TradeController {
                     if (existingTrade.getImage() != null && !existingTrade.getImage().isEmpty()) {
                         File existingFile = new File(uploadDir + existingTrade.getImage());
                         if (existingFile.exists()) {
-                            existingFile.delete();
+                            if (!existingFile.delete()) {
+                                logger.warn("기존 이미지 파일을 삭제하지 못했습니다: {}", existingFile.getPath());
+                            }
                         }
                     }
 
@@ -156,9 +159,8 @@ public class TradeController {
             redirectAttributes.addFlashAttribute("successMsg", "상품 수정 성공!!");
             return "redirect:/trade/detail/" + idx;
         } catch (Exception e) {
-            System.out.println("Exception occurred while updating trade: " + e.getMessage());
-            e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMsg", "상품 수정 실패: " + e.getMessage());
+            logger.error("상품 수정 중 오류 발생. idx: {}", idx, e);
+            redirectAttributes.addFlashAttribute("errorMsg", "상품 수정에 실패했습니다.");
             return "redirect:/trade/edit/" + idx;
         }
     }
@@ -170,15 +172,16 @@ public class TradeController {
             if (trade.getImage() != null && !trade.getImage().isEmpty()) {
                 File imageFile = new File(uploadDir + trade.getImage());
                 if (imageFile.exists()) {
-                    imageFile.delete();
+                    if (!imageFile.delete()) {
+                        logger.warn("이미지 파일을 삭제하지 못했습니다: {}", imageFile.getPath());
+                    }
                 }
             }
             tradeService.deleteTrade(idx);
             redirectAttributes.addFlashAttribute("successMsg", "상품 삭제 성공!!");
         } catch (Exception e) {
-            System.out.println("Exception occurred while deleting trade: " + e.getMessage());
-            e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMsg", "상품 삭제 실패: " + e.getMessage());
+            logger.error("상품 삭제 중 오류 발생. idx: {}", idx, e);
+            redirectAttributes.addFlashAttribute("errorMsg", "상품 삭제에 실패했습니다.");
         }
         return "redirect:/trade/list";
     }

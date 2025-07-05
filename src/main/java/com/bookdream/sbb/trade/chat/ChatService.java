@@ -1,16 +1,19 @@
 package com.bookdream.sbb.trade.chat;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.bookdream.sbb.DataNotFoundException;
+import com.bookdream.sbb.trade.Trade;
+import com.bookdream.sbb.trade.TradeService;
+import com.bookdream.sbb.user.Member;
+import com.bookdream.sbb.user.MemberService;
+import com.bookdream.sbb.user.SiteUser;
+import com.bookdream.sbb.user.UserService;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.bookdream.sbb.trade.TradeService;
-import com.bookdream.sbb.user.MemberService;
-import com.bookdream.sbb.user.UserService;
-import com.bookdream.sbb.user.SiteUser;
-import com.bookdream.sbb.user.Member;
-import com.bookdream.sbb.DataNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,27 +23,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ChatService {
 
-    @Autowired
-    private ChatRepository chatRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ChatService.class);
 
-    @Autowired
-    private ChatRoomRepository chatRoomRepository;
+    private final ChatRepository chatRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final TradeService tradeService;
+    private final UserService userService;
+    private final MemberService memberService;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    @Autowired
-    private TradeService tradeService;
-    
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private MemberService memberService;
-
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
-
-    private Map<Long, Set<String>> activeUsers = new ConcurrentHashMap<>();
+    private final Map<Long, Set<String>> activeUsers = new ConcurrentHashMap<>();
 
     public void userJoined(Long chatRoomId, String userId) {
         activeUsers.computeIfAbsent(chatRoomId, k -> ConcurrentHashMap.newKeySet()).add(userId);
@@ -60,39 +55,32 @@ public class ChatService {
         return chatRepository.findByChatRoomId(chatRoomId);
     }
 
-    public Chat saveChat(Chat chat) {
+    public void saveChat(Chat chat) {
         chat.setCreatedAt(LocalDateTime.now());
-        chat.setUnreadCount(1);  // 메시지가 생성될 때 unreadCount를 1로 설정
+        chat.setUnreadCount(1);
         Chat savedChat = chatRepository.save(chat);
 
-        updateNewMessagesCount(chat.getChatRoomId(), chat.getSenderId());
+        updateNewMessagesCount(savedChat.getChatRoomId(), savedChat.getSenderId());
 
-        chatRoomRepository.findById(chat.getChatRoomId()).ifPresent(chatRoom -> {
-            if (chat.getType() == Chat.MessageType.IMAGE) {
+        chatRoomRepository.findById(savedChat.getChatRoomId()).ifPresent(chatRoom -> {
+            if (savedChat.getType() == Chat.MessageType.IMAGE) {
                 chatRoom.setLastMessage("사진을 보냈습니다.");
             } else {
-                chatRoom.setLastMessage(chat.getMessage());
+                chatRoom.setLastMessage(savedChat.getMessage());
             }
-            chatRoom.setLastMessageTime(chat.getCreatedAt());
-            chatRoom.setLastMessageSenderId(chat.getSenderId());
+            chatRoom.setLastMessageTime(savedChat.getCreatedAt());
+            chatRoom.setLastMessageSenderId(savedChat.getSenderId());
             chatRoomRepository.save(chatRoom);
 
             messagingTemplate.convertAndSend("/topic/chatRoomsUpdate", chatRoom);
         });
-
-        return savedChat;
     }
 
     public List<ChatRoom> getChatRooms(String userId) {
         List<ChatRoom> chatRooms = chatRoomRepository.findBySenderIdOrReceiverId(userId, userId);
 
-        return chatRooms.stream().map(chatRoom -> {
-            String opponentId = null;
-            if (chatRoom.getSenderId() != null && chatRoom.getSenderId().equals(userId)) {
-                opponentId = chatRoom.getReceiverId();
-            } else if (chatRoom.getReceiverId() != null && chatRoom.getReceiverId().equals(userId)) {
-                opponentId = chatRoom.getSenderId();
-            }
+        return chatRooms.stream().peek(chatRoom -> {
+            String opponentId = chatRoom.getOpponentId(userId);
 
             if (opponentId != null) {
                 String opponentUsername = getUserNameByUserId(opponentId);
@@ -100,7 +88,6 @@ public class ChatService {
             } else {
                 chatRoom.setOpponentUsername("상대방이 나갔습니다.");
             }
-            return chatRoom;
         }).collect(Collectors.toList());
     }
 
@@ -124,21 +111,23 @@ public class ChatService {
     }
 
     public ChatRoom createChatRoom(String senderId, String receiverId, int tradeIdx) {
-        String bookTitle = tradeService.getTradeById(tradeIdx).getTitle();
-
-        ChatRoom chatRoom = chatRoomRepository.findBySenderIdAndReceiverIdAndTradeIdx(senderId, receiverId, tradeIdx)
+        // 5. orElseGet 내부 변수명 변경하여 중복 해결
+        return chatRoomRepository.findBySenderIdAndReceiverIdAndTradeIdx(senderId, receiverId, tradeIdx)
                 .orElseGet(() -> {
-                    ChatRoom newChatRoom = new ChatRoom();
-                    newChatRoom.setSenderId(senderId);
-                    newChatRoom.setReceiverId(receiverId);
-                    newChatRoom.setTradeIdx(tradeIdx);
-                    newChatRoom.setBookTitle(bookTitle);
-                    newChatRoom.setLastMessageTime(LocalDateTime.now());
-                    newChatRoom.setNewMessagesCountForSender(0);
-                    newChatRoom.setNewMessagesCountForReceiver(0);
-                    return chatRoomRepository.save(newChatRoom);
+                    Trade trade = tradeService.getTradeById(tradeIdx);
+                    if (trade == null) {
+                        throw new DataNotFoundException("거래 정보를 찾을 수 없습니다: " + tradeIdx);
+                    }
+                    ChatRoom newRoom = new ChatRoom();
+                    newRoom.setSenderId(senderId);
+                    newRoom.setReceiverId(receiverId);
+                    newRoom.setTradeIdx(tradeIdx);
+                    newRoom.setBookTitle(trade.getTitle());
+                    newRoom.setLastMessageTime(LocalDateTime.now());
+                    newRoom.setNewMessagesCountForSender(0);
+                    newRoom.setNewMessagesCountForReceiver(0);
+                    return chatRoomRepository.save(newRoom);
                 });
-        return chatRoom;
     }
 
     @Transactional

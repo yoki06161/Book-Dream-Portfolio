@@ -3,7 +3,9 @@ package com.bookdream.sbb.trade;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,13 +17,13 @@ import com.bookdream.sbb.user.SiteUser;
 import com.bookdream.sbb.user.UserRepository;
 
 @Service
+@RequiredArgsConstructor
 public class TradeService {
 
-    @Autowired
-    private TradeRepository tradeRepository;
-    
-    @Autowired
-    private UserRepository userRepository;
+    private static final Logger logger = LoggerFactory.getLogger(TradeService.class);
+
+    private final TradeRepository tradeRepository;
+    private final UserRepository userRepository;
 
     public Page<Trade> getList(int page, String kw) {
         Pageable pageable = PageRequest.of(page, 10);
@@ -61,7 +63,7 @@ public class TradeService {
     }
 
     @Transactional
-    public Trade updateTrade(int idx, Trade updatedTrade) {
+    public void updateTrade(int idx, Trade updatedTrade) {
         Optional<Trade> optionalTrade = tradeRepository.findById(idx);
         if (optionalTrade.isPresent()) {
             Trade trade = optionalTrade.get();
@@ -73,13 +75,11 @@ public class TradeService {
             trade.setGrade(updatedTrade.getGrade());
             trade.setOriginalPrice(updatedTrade.getOriginalPrice());
             try {
-                return tradeRepository.save(trade);
+                tradeRepository.save(trade);
             } catch (Exception e) {
-                System.out.println("Error while updating trade: " + e.getMessage());
+                logger.error("Trade 업데이트 중 오류 발생: {}", e.getMessage(), e);
                 throw e;
             }
-        } else {
-            return null;
         }
     }
 
