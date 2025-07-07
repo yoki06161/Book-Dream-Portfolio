@@ -17,7 +17,8 @@
   - **Backend**: Java, Spring Boot, Spring Data JPA, MySQL  
   - **Frontend**: Thymeleaf, HTML, CSS, JavaScript  
   - **실시간 통신**: WebSocket (SockJS, STOMP)  
-  - **크롤링**: Jsoup (알라딘 사이트 도서 정보 수집)  
+  - **크롤링**: Jsoup (알라딘 사이트 도서 정보 수집)
+  - **로깅**: SLF4J, Logback
   - **빌드 및 협업**: Gradle, Git, GitHub  
 
 - **특징**  
@@ -28,8 +29,9 @@
 <br/>
 
 ## 개인 기여 내용
+### 1. 팀 프로젝트 담당 기능
 
-본 프로젝트는 팀으로 진행했으나, **개인적으로는 아래 기능들**을 주로 담당했습니다:
+팀 프로젝트 당시 아래 기능들의 설계와 구현을 주도적으로 담당했습니다.
 
 1. **중고거래 로직**  
    - `TradeController` / `TradeService` / `Trade` 엔티티를 이용해  
@@ -41,6 +43,15 @@
      - 메시지 전송/수신, 이미지를 포함한 **실시간 채팅**, **읽음 처리**, **새 메시지 알림** 등 구현  
    - `WebSocketConfig`로 SockJS & STOMP Endpoint 설정  
    - `ChatRoom`, `Chat` 엔티티 설계: **unreadCount**(미읽은 메시지 수), **나가기(LEAVE) 이벤트** 처리 등
+
+### 2. 개인 포트폴리오를 위한 코드 리팩토링
+
+이 프로젝트를 개인 포트폴리오로 재구성하면서, 코드의 안정성과 유지보수성을 높이기 위해 다음과 같은 리팩토링 작업을 진행했습니다.
+
+-   **의존성 주입 방식 개선**: `@Autowired`를 사용한 필드 주입 방식에서 **생성자 주입 방식**(`@RequiredArgsConstructor`)으로 변경하여, 의존성 결합도를 낮추고 테스트 용이성을 확보했습니다.
+-   **안정적인 예외 처리**: 모든 `e.printStackTrace()` 호출을 **SLF4J 로거(`logger.error`)**로 대체하여, 운영 환경에서의 체계적인 예외 추적 및 관리가 가능하도록 개선했습니다.
+-   **코드 안정성 강화**: `File.delete()`의 반환값을 확인하여 파일 삭제 실패 시 경고 로그를 남기고, `NullPointerException` 발생 가능성이 있는 코드를 방어적으로 수정하여 안정성을 높였습니다.
+-   **가독성 및 유지보수성 향상**: 중복되던 `DateUtils` 클래스를 공용 유틸리티로 통합하고, `.size() > 0` 대신 `!isEmpty()`를 사용하는 등 코드 컨벤션을 적용하여 가독성을 높였습니다.
 
 <br/>
 
