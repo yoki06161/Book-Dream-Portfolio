@@ -1,46 +1,66 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-<meta charset="UTF-8">
-<meta name="_csrf" content="${_csrf.token}">
-<meta name="_csrf_header" content="${_csrf.header}">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-<style>
-	/*헤더푸터용*/
-	.inner {
-	  margin: 0 auto !important;
-	  max-width: 1280px !important;
-	}
-	/*메인콘텐츠용*/
-	.container{
-	  margin: 70px auto 70px auto !important;
-	  max-width: 1280px !important;
-	}
-	/* number 화살표 제거 - Chrome, Safari, Edge, Opera */
-	input::-webkit-outer-spin-button,
-	input::-webkit-inner-spin-button {
-	  -webkit-appearance: none;
-	  margin: 0;
-	}
-	/* number 화살표 제거 - Firefox  */
-	input[type='number'] {
-	  -moz-appearance: textfield;
-	}
-</style>
+    <meta charset="UTF-8">
+
+    <th:block sec:authorize="isAuthenticated()">
+        <meta name="_csrf" th:content="${_csrf.token}">
+        <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    </th:block>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        /*헤더푸터용*/
+        .inner {
+            margin: 0 auto !important;
+            max-width: 1280px !important;
+        }
+        /*메인콘텐츠용*/
+        .container{
+            margin: 70px auto 70px auto !important;
+            max-width: 1280px !important;
+        }
+        /* number 화살표 제거 - Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        /* number 화살표 제거 - Firefox  */
+        input[type='number'] {
+            -moz-appearance: textfield;
+        }
+    </style>
 <body>
 <nav th:replace="~{header::headerfragment}"></nav>
 <th:block layout:fragment="content" class="container"></th:block>
 <footer th:replace="~{footer::footerfragment}"></footer>
 <th:block layout:fragment="script">
 </th:block>
-<th:block layout:fragment="script"></th:block>
 <script th:inline="javascript" type="text/javascript"  th:src="@{/js/common-ui.js}"></script>
-<!-- Thymeleaf 템플릿에서 CSRF 토큰을 얻어오기 -->
+
+<!-- Thymeleaf 템플릿에서 CSRF 토큰을 얻어오기  -->
 <script th:inline="javascript">
-    var csrfToken = /*[[${_csrf.token}]]*/ '';
-    var csrfHeader = /*[[${_csrf.headerName}]]*/ '';
-    var isAuthenticated = /*[[${#authentication?.isAuthenticated()}]]*/ false;
+    /* <![CDATA[ */
+    // 1. 모든 사용자를 위해 변수를 먼저 선언하고 초기화합니다.
+    var csrfToken = null;
+    var csrfHeader = null;
+    // #authentication 객체 자체가 null일 수 있으므로, 먼저 null 체크를 합니다.
+    var isAuthenticated = /*[[${#authentication != null && #authentication.isAuthenticated()}]]*/ false;
+    /* ]]> */
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<!-- 2. 로그인한 사용자일 경우에만 이 스크립트 블록을 렌더링하여 값을 할당합니다. -->
+<th:block th:if="${#authentication != null and #authentication.isAuthenticated()}">
+    <script th:inline="javascript">
+        /* <![CDATA[ */
+        // 이 블록은 로그인 했을 때만 실행되므로 _csrf 객체가 보장됩니다.
+        csrfToken = /*[[${_csrf.token}]]*/ null;
+        csrfHeader = /*[[${_csrf.headerName}]]*/ null;
+        /* ]]> */
+    </script>
+</th:block>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

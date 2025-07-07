@@ -52,6 +52,8 @@ implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // Sprin
 	implementation 'org.springframework.boot:spring-boot-starter-mail' // 이메일 사용
 	implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'	  // 아임포트 결제 api 사용
 	implementation 'org.springframework.boot:spring-boot-starter-json'    // 결제 취소를 위한 프록시 서버 사용
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect' // Thymeleaf 레이아웃 기능을 사용하기 위한 라이브러리
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6' // Thymeleaf에서 Spring Security 기능을 사용하기 위한 라이브러리
 }
 
 tasks.named('test') {

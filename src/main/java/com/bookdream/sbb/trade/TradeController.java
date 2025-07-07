@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
@@ -30,7 +31,7 @@ public class TradeController {
     private final TradeCrawling tradeCrawling;
 
 
-    private final String uploadDir = "C:/Users/TJ/git/Book-Dream/src/main/resources/static/image/";
+    private final String uploadDir = "C:/Users/박재성/Desktop/bookdream_images/";
 
     @GetMapping("/list")
     public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -83,6 +84,11 @@ public class TradeController {
 
     @PostMapping("/create")
     public String createTrade(@ModelAttribute Trade trade, Principal principal, RedirectAttributes redirectAttributes) {
+        if (principal == null) {
+            redirectAttributes.addFlashAttribute("errorMsg", "로그인이 필요합니다.");
+            return "redirect:/user/login";
+        }
+
         try {
             String username = principal.getName();
             trade.setId(username);
@@ -90,22 +96,32 @@ public class TradeController {
             if (trade.getImage() != null && !trade.getImage().isEmpty()) {
                 String imageUrl = trade.getImage();
                 String fileName = UUID.randomUUID().toString() + ".jpg";
-                String filePath = uploadDir + fileName;
 
-                // 이미지 다운로드 및 저장
-                try (InputStream in = new URL(imageUrl).openStream()) {
-                    Files.copy(in, Paths.get(filePath));
+                // 이미지 저장 폴더가 없으면 생성하는 로직
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs();
                 }
 
-                trade.setImage(fileName);
+                String filePath = uploadDir + fileName;
+
+                try (InputStream in = new URL(imageUrl).openStream()) {
+                    Files.copy(in, Paths.get(filePath));
+                    trade.setImage(fileName);
+                } catch (IOException e) {
+                    logger.error("이미지 파일 저장 실패. URL: {}, Path: {}", imageUrl, filePath, e);
+                    redirectAttributes.addFlashAttribute("errorMsg", "이미지 저장에 실패했습니다. 설정된 파일 경로를 확인해주세요.");
+                    return "redirect:/trade/create";
+                }
             }
 
             tradeService.createTrade(trade);
             redirectAttributes.addFlashAttribute("successMsg", "상품 등록 성공!!");
             return "redirect:/trade/list";
+
         } catch (Exception e) {
-            logger.error("상품 등록 중 오류 발생. 사용자: {}", principal.getName(), e);
-            redirectAttributes.addFlashAttribute("errorMsg", "상품 등록에 실패했습니다.");
+            logger.error("상품 등록 중 알 수 없는 오류 발생. 사용자: {}, 오류: {}", principal.getName(), e.getMessage(), e);
+            redirectAttributes.addFlashAttribute("errorMsg", "상품 등록 중 오류가 발생했습니다. 서버 로그를 확인해주세요.");
             return "redirect:/trade/create";
         }
     }

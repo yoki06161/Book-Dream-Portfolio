@@ -3,6 +3,8 @@ package com.bookdream.sbb.trade;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import com.bookdream.sbb.user.Member;
+import com.bookdream.sbb.user.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +24,11 @@ public class TradeService {
 
     private static final Logger logger = LoggerFactory.getLogger(TradeService.class);
 
+    private final MemberRepository memberRepository;
     private final TradeRepository tradeRepository;
     private final UserRepository userRepository;
 
-    public Page<Trade> getList(int page, String kw) {
+    public Page<Trade>  getList(int page, String kw) {
         Pageable pageable = PageRequest.of(page, 10);
         if (!kw.isEmpty()) {
             return tradeRepository.findAllByKeyword(kw, pageable);
@@ -39,13 +42,21 @@ public class TradeService {
         return trade.orElse(null);
     }
 
-    public String getUsername(String email) {
-        Optional<SiteUser> siteUser = this.userRepository.findByEmail(email);
+    public String getUsername(String loginId) {
+        // 1. 먼저 일반 사용자 테이블(site_user)에서 이메일로 찾아봅니다.
+        Optional<SiteUser> siteUser = this.userRepository.findByEmail(loginId);
         if (siteUser.isPresent()) {
             return siteUser.get().getUsername();
-        } else {
-            throw new DataNotFoundException("siteuser not found!!");
         }
+
+        // 2. 일반 사용자가 아니라면, 소셜 로그인 사용자 테이블(member)에서 loginId로 찾아봅니다.
+        Member member = this.memberRepository.findByLoginId(loginId);
+        if (member != null) {
+            return member.getName(); // member 테이블에는 이름이 'name' 필드에 저장되어 있습니다.
+        }
+
+        // 3. 두 테이블 모두에서 사용자를 찾지 못한 경우 예외를 발생시킵니다.
+        throw new DataNotFoundException("사용자를 찾을 수 없습니다: " + loginId);
     }
     
     @Transactional

@@ -76,8 +76,11 @@
             </li>
             <li class="nav-item"><a class="nav-link"
                sec:authorize="isAnonymous()" th:href="@{|/user/signup|}">회원가입</a>
-               <a class="nav-link" sec:authorize="isAuthenticated()"
-               th:href="@{|/user/logout|}">로그아웃</a></li>
+               <form th:action="@{/user/logout}" method="post" sec:authorize="isAuthenticated()" style="display: inline;">
+                  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                  <button type="submit" class="nav-link btn btn-link" style="display: inline; cursor: pointer; padding: 0.5rem 1rem; vertical-align: baseline; text-decoration: none;">로그아웃</button>
+               </form>
          </ul>
       </div>
    </div>

@@ -36,9 +36,19 @@ public class TradeCrawling {
                     details = detailElements.get(0).text(); // 저자, 옮긴이, 출판사 정보
                 }
                 String priceText = "0"; // 기본값 설정
-                Elements priceElements = book.select("li span.ss_p2 b span");
-                if (!priceElements.isEmpty()) {
-                    priceText = priceElements.get(0).text(); // 가격 정보
+                Element priceListItem = book.select("li:contains(원 →)").first();
+                if (priceListItem != null) {
+                    // <li> 요소의 전체 텍스트를 가져옵니다. (예: "8,000원 → 7,200원...")
+                    String fullPriceText = priceListItem.text();
+
+                    // "→" 기호 앞부분이 정가이므로, 이를 기준으로 텍스트를 분리합니다.
+                    priceText = fullPriceText.split("→")[0].trim();
+                } else {
+                    // 만약 할인 정보(→)가 없는 책이라면, 첫 번째로 나오는 가격을 정가로 간주합니다.
+                    Element regularPriceItem = book.select("li:contains(원)").first();
+                    if(regularPriceItem != null) {
+                        priceText = regularPriceItem.text().split("원")[0].trim();
+                    }
                 }
                 
                 String imgUrl = book.select("div.flipcover_in img.front_cover").attr("src"); // 이미지 URL
