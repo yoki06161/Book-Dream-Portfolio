@@ -183,27 +183,30 @@ function connectChat() {
     stompClientChat = Stomp.over(socket);
     stompClientChat.connect({}, function (frame) {
         console.log('Connected: ' + frame);
+
+        // 서버가 보내주는 최종 메시지를 수신하여 화면에 표시
         stompClientChat.subscribe('/topic/public', function (messageOutput) {
             var message = JSON.parse(messageOutput.body);
-            if (message.senderId !== senderId) {
-                setTimeout(function () {
-                    showMessage(message);
-                });
-            } else {
+            if (message && String(message.chatRoomId) === String(chatRoomId)) {
                 showMessage(message);
             }
         });
-        fetchChatHistory(); // 초기 채팅 기록 불러오기
 
-        // 사용자 접속 상태를 서버에 알림
-        stompClientChat.send("/app/chat.userJoined", {}, JSON.stringify({ chatRoomId: chatRoomId, userId: senderId }));
-
-        // 새로운 메시지를 읽음 처리
-        stompClientChat.subscribe('/topic/chat/' + chatRoomId, function (messageOutput) {
-            var message = JSON.parse(messageOutput.body);
-            markAsRead(message.id, message.senderId);
+        // 채팅방 재입장 시, 과거 메시지들을 '읽음' 처리하기 위한 구독
+        stompClientChat.subscribe('/topic/chatRoomsUpdate', function (message) {
+            console.log('Chat room update signal received. Refreshing chat history.');
+            fetchChatHistory();
         });
+
+        fetchChatHistory(); // 과거 대화 내역 불러오기
+        stompClientChat.send("/app/chat.userJoined", {}, JSON.stringify({ chatRoomId: chatRoomId, userId: senderId }));
     });
+}
+
+function notifyRead(messageId) {
+    if (stompClientChat && stompClientChat.connected && messageId) {
+        stompClientChat.send("/app/chat.readMessage", {}, JSON.stringify({ 'id': messageId }));
+    }
 }
 
 function sendMessage() {
@@ -267,63 +270,45 @@ function markAsRead(messageId, senderId) {
 }
 
 function showMessage(message) {
-    var chatBox = document.getElementById('chat-box');
-    var createdAt = new Date(message.createdAt);
-    if (isNaN(createdAt)) {
-        createdAt = new Date(message.createdAt.replace(' ', 'T')); // 날짜 파싱 수정
+    if (!message || !message.id) return;
+
+    // 새로고침 시 중복 렌더링 방지
+    if (document.getElementById('chat-message-' + message.id)) {
+        return;
     }
-    var messageDate = createdAt.toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        weekday: 'long'
-    });
+
+    var chatBox = document.getElementById('chat-box');
+    var createdAt = new Date(message.createdAt.replace(' ', 'T'));
+    var messageDate = createdAt.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
 
     if (message.type !== 'LEAVE' && lastMessageDate !== messageDate) {
         var dateSeparator = document.createElement('div');
         dateSeparator.classList.add('date-separator');
-        dateSeparator.innerHTML = `
-            <span><i class="fas fa-calendar-alt"></i>${messageDate}</span>
-        `;
+        dateSeparator.innerHTML = `<span><i class="fas fa-calendar-alt"></i>${messageDate}</span>`;
         chatBox.appendChild(dateSeparator);
         lastMessageDate = messageDate;
     }
 
     var messageElement = document.createElement('div');
+    messageElement.id = 'chat-message-' + message.id;
+
+    var unreadBadgeHTML = message.unreadCount > 0 ? `<span class="unread-badge">${message.unreadCount}</span>` : '';
+    var timeHTML = `<span class="time_date">${createdAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>`;
+    var contentHTML = message.type === 'IMAGE' ? `<img src="${message.message}" style="max-width: 100%; height: auto;" />` : `<p>${message.message}</p>`;
+
     if (message.senderId === senderId) {
         messageElement.classList.add('outgoing_msg');
-        messageElement.innerHTML = message.type === 'IMAGE' ? `
-            <div class="sent_msg">
-                <img src="${message.message}" alt="image" style="max-width: 100%; height: auto;" />
-                <span class="time_date">${createdAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>
-                ${message.unreadCount > 0 ? `<span class="unread-badge">${message.unreadCount}</span>` : ''}
-            </div>
-        ` : `
-            <div class="sent_msg">
-                <p>${message.message}</p>
-                ${message.type !== 'LEAVE' ? `<span class="time_date">${createdAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>` : ''}
-                ${message.unreadCount > 0 ? `<span class="unread-badge">${message.unreadCount}</span>` : ''}
-            </div>
-        `;
+        messageElement.innerHTML = `<div class="sent_msg">${contentHTML}${timeHTML}${unreadBadgeHTML}</div>`;
     } else {
         messageElement.classList.add('received_msg');
-        messageElement.innerHTML = message.type === 'IMAGE' ? `
-            <div class="received_withd_msg" onclick="markAsRead(${message.id}, '${message.senderId}')">
-                <img src="${message.message}" alt="image" style="max-width: 100%; height: auto;" />
-                <span class="time_date">${createdAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>
-                ${message.unreadCount > 0 ? `<span class="unread-badge">${message.unreadCount}</span>` : ''}
-            </div>
-        ` : `
-            <div class="received_withd_msg" onclick="markAsRead(${message.id}, '${message.senderId}')">
-                <p>${message.message}</p>
-                ${message.type !== 'LEAVE' ? `<span class="time_date">${createdAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>` : ''}
-                ${message.unreadCount > 0 ? `<span class="unread-badge">${message.unreadCount}</span>` : ''}
-            </div>
-        `;
+        // 'onclick' 이벤트 제거됨
+        messageElement.innerHTML = `<div class="received_withd_msg">${contentHTML}${timeHTML}${unreadBadgeHTML}</div>`;
     }
+
     chatBox.appendChild(messageElement);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
+
 
 document.addEventListener('DOMContentLoaded', function () {
     connectChat();
@@ -378,27 +363,15 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function fetchChatHistory() {
-    fetch(`/trade/chat/history?chatRoomId=${chatRoomId}`, {
-        method: 'GET',
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        setTimeout(function() {
+    fetch(`/trade/chat/history?chatRoomId=${chatRoomId}`, { method: 'GET' })
+        .then(response => response.ok ? response.json() : Promise.reject('History fetch failed'))
+        .then(data => {
             var chatBox = document.getElementById('chat-box');
             chatBox.innerHTML = '';
-            data.forEach(chat => {
-                showMessage(chat); // 기존 메시지를 화면에 추가
-            });
-        });
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+            lastMessageDate = null;
+            data.forEach(chat => showMessage(chat));
+        })
+        .catch(error => console.error('Error fetching history:', error));
 }
 </script>
 </head>

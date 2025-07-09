@@ -13,11 +13,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -55,14 +58,29 @@ public class ChatService {
         return chatRepository.findByChatRoomId(chatRoomId);
     }
 
+    @Transactional
     public void saveChat(Chat chat) {
         chat.setCreatedAt(LocalDateTime.now());
-        chat.setUnreadCount(1);
-        Chat savedChat = chatRepository.save(chat);
 
-        updateNewMessagesCount(savedChat.getChatRoomId(), savedChat.getSenderId());
+        // 채팅방 정보를 조회하여 상대방 ID를 찾습니다.
+        chatRoomRepository.findById(chat.getChatRoomId()).ifPresent(chatRoom -> {
+            String senderId = chat.getSenderId();
+            String recipientId = chatRoom.getSenderId().equals(senderId) ? chatRoom.getReceiverId() : chatRoom.getSenderId();
 
-        chatRoomRepository.findById(savedChat.getChatRoomId()).ifPresent(chatRoom -> {
+            // 현재 채팅방에 접속 중인 사용자 목록을 가져옵니다.
+            Set<String> usersInRoom = activeUsers.get(chat.getChatRoomId());
+            boolean isRecipientActive = usersInRoom != null && usersInRoom.contains(recipientId);
+
+            // 상대방의 접속 상태에 따라 '안 읽음' 카운트를 설정합니다.
+            if (isRecipientActive) {
+                chat.setUnreadCount(0); // 상대방이 접속 중이면 '읽음'으로 처리
+            } else {
+                chat.setUnreadCount(1); // 상대방이 없으면 '안 읽음'으로 처리
+            }
+
+            Chat savedChat = chatRepository.save(chat);
+
+            // 채팅방 목록에 표시될 마지막 메시지 정보를 업데이트합니다.
             if (savedChat.getType() == Chat.MessageType.IMAGE) {
                 chatRoom.setLastMessage("사진을 보냈습니다.");
             } else {
@@ -70,9 +88,27 @@ public class ChatService {
             }
             chatRoom.setLastMessageTime(savedChat.getCreatedAt());
             chatRoom.setLastMessageSenderId(savedChat.getSenderId());
-            chatRoomRepository.save(chatRoom);
 
+            // 상대방이 접속 중이 아닐 때만, 채팅방의 전체 안 읽은 메시지 수를 증가시킵니다.
+            if (!isRecipientActive) {
+                if (recipientId.equals(chatRoom.getReceiverId())) {
+                    chatRoom.setNewMessagesCountForReceiver(chatRoom.getNewMessagesCountForReceiver() + 1);
+                } else {
+                    chatRoom.setNewMessagesCountForSender(chatRoom.getNewMessagesCountForSender() + 1);
+                }
+            }
+
+            chatRoomRepository.save(chatRoom);
             messagingTemplate.convertAndSend("/topic/chatRoomsUpdate", chatRoom);
+
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    // 이 블록 안의 코드는 DB 저장이 완전히 완료된 후에 실행됩니다.
+                    sendNewMessagesCount(senderId);   // 메시지 보낸 사람의 배지 업데이트
+                    sendNewMessagesCount(recipientId); // 메시지 받는 사람의 배지 업데이트
+                }
+            });
         });
     }
 
@@ -208,13 +244,21 @@ public class ChatService {
     }
 
     @Transactional
-    public void markMessageAsRead(Long messageId, String readerId) {
-        chatRepository.findById(messageId).ifPresent(chat -> {
+    public Chat markMessageAsRead(Long messageId, String readerId) {
+        // ID로 메시지를 찾습니다.
+        Optional<Chat> optionalChat = chatRepository.findById(messageId);
+
+        // 메시지가 존재하면 '읽음' 처리 로직을 실행합니다.
+        if (optionalChat.isPresent()) {
+            Chat chat = optionalChat.get();
+            // 메시지가 아직 안 읽혔고, 보낸 사람이 아닌 경우에만 처리합니다.
             if (chat.getUnreadCount() > 0 && !chat.getSenderId().equals(readerId)) {
-                chat.setUnreadCount(chat.getUnreadCount() - 1);
-                chatRepository.save(chat);
+                chat.setUnreadCount(0); // 안 읽은 사람 수를 0으로 설정합니다.
+                return chatRepository.save(chat); // 변경된 내용을 저장하고 반환합니다.
             }
-        });
+            return chat; // 이미 읽었거나 자신의 메시지면 변경 없이 그대로 반환합니다.
+        }
+        return null; // 메시지가 없으면 null을 반환합니다.
     }
 
     @Transactional
@@ -222,11 +266,13 @@ public class ChatService {
         List<Chat> chats = chatRepository.findByChatRoomId(chatRoomId);
         for (Chat chat : chats) {
             if (!chat.getSenderId().equals(userId) && chat.getUnreadCount() > 0) {
-                chat.setUnreadCount(chat.getUnreadCount() - 1);
+                chat.setUnreadCount(0); // 안 읽은 메시지 수를 0으로 변경
                 chatRepository.save(chat);
             }
         }
-        // 실시간으로 모든 클라이언트에게 업데이트된 채팅 메시지를 전송
+        // 클라이언트에게 UI 갱신이 필요함을 알립니다.
         messagingTemplate.convertAndSend("/topic/chatRoomsUpdate", chatRoomId);
     }
+
+
 }

@@ -106,28 +106,14 @@ public class ChatController {
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
     public Chat sendMessage(Chat chatMessage, Principal principal) throws InterruptedException {
-        // 이미지 메시지인 경우에만 1초 딜레이 추가
         if (chatMessage.getType() == Chat.MessageType.IMAGE) {
-            Thread.sleep(1000);
+            Thread.sleep(1000); // 이미지 메시지 딜레이 (선택 사항)
         }
 
-        chatMessage.setCreatedAt(LocalDateTime.now());
-        chatMessage.setUnreadCount(1);  // 메시지가 생성될 때 unreadCount를 1로 설정
+        // 서비스의 saveChat을 호출하여 '안 읽음' 카운트 등 모든 상태를 결정합니다.
         chatService.saveChat(chatMessage);
 
-        // 새로운 메시지 수 증가
-        if (principal != null) {
-            String currentUserId = principal.getName();
-            if (!currentUserId.equals(chatMessage.getSenderId())) {
-                chatService.incrementNewMessagesCount(chatMessage.getChatRoomId(), chatMessage.getSenderId(), currentUserId);
-                chatService.sendNewMessagesCount(chatMessage.getSenderId());
-                chatService.sendNewMessagesCount(currentUserId);
-            }
-        }
-
-        // 채팅방 목록 갱신을 위해 새 메시지 이벤트 발행
-        messagingTemplate.convertAndSend("/topic/chatRoomsUpdate", chatMessage);
-
+        // 서버에서 모든 상태가 결정된 chatMessage 객체를 클라이언트로 반환합니다.
         return chatMessage;
     }
 
@@ -165,23 +151,31 @@ public class ChatController {
 
     @GetMapping("/newMessagesCount")
     @ResponseBody
-    public ResponseEntity<Integer> getNewMessagesCount(Principal principal) {
+    public ResponseEntity<Map<String, Integer>> getNewMessagesCount(Principal principal) {
         if (principal == null) {
-            return ResponseEntity.status(403).build();
+            // 로그인하지 않은 경우 0을 반환합니다.
+            return ResponseEntity.ok(Map.of("count", 0));
         }
-
-        String userId = principal.getName();
-        int newMessagesCount = chatService.getTotalNewMessagesCount(userId);
-        return ResponseEntity.ok(newMessagesCount);
+        int newMessagesCount = chatService.getTotalNewMessagesCount(principal.getName());
+        // {"count": 숫자} 형태의 JSON 객체로 응답을 생성합니다.
+        return ResponseEntity.ok(Map.of("count", newMessagesCount));
     }
 
     @MessageMapping("/chat.readMessage")
     @SendTo("/topic/public")
-    public Chat readMessage(@RequestBody Map<String, String> payload) {
-        Long messageId = Long.parseLong(payload.get("id"));
-        String readerId = payload.get("senderId");
-        chatService.markMessageAsRead(messageId, readerId);
-        return new Chat();
+    public Chat readMessage(@RequestBody Map<String, Object> payload, Principal principal) {
+        if (principal == null) {
+            return null;
+        }
+        try {
+            Long messageId = Long.parseLong(String.valueOf(payload.get("id")));
+            String readerId = principal.getName(); // 현재 로그인한 사용자 ID를 가져옵니다.
+            // 서비스 호출 결과를 그대로 반환하여 @SendTo로 전송합니다.
+            return chatService.markMessageAsRead(messageId, readerId);
+        } catch (Exception e) {
+            logger.error("메시지 읽음 처리 중 오류 발생: {}", payload, e);
+            return null;
+        }
     }
     
     @MessageMapping("/chat.userActive")

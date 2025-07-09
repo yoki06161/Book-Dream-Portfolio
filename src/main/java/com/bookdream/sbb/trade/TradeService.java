@@ -28,7 +28,7 @@ public class TradeService {
     private final TradeRepository tradeRepository;
     private final UserRepository userRepository;
 
-    public Page<Trade>  getList(int page, String kw) {
+    public Page<Trade> getList(int page, String kw) {
         Pageable pageable = PageRequest.of(page, 10);
         if (!kw.isEmpty()) {
             return tradeRepository.findAllByKeyword(kw, pageable);
