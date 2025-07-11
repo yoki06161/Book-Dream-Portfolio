@@ -13,14 +13,18 @@
   - 책을 등록/판매/구매하는 **온라인 중고거래**  
   - 거래 상대방과 **실시간 채팅**(WebSocket)으로 소통
 
-- **사용 기술 스택**  
-  - **Backend**: Java, Spring Boot, Spring Data JPA, MySQL  
-  - **Frontend**: Thymeleaf, HTML, CSS, JavaScript  
-  - **실시간 통신**: WebSocket (SockJS, STOMP)  
-  - **크롤링**: Jsoup (알라딘 사이트 도서 정보 수집)
-  - **로깅**: SLF4J, Logback
-  - **빌드 및 협업**: Gradle, Git, GitHub  
 
+
+- **사용 기술 스택**
+  
+  [![stackticon](https://firebasestorage.googleapis.com/v0/b/stackticon-81399.appspot.com/o/images%2F1752196453573?alt=media&token=6b922f67-0896-4169-868c-a0c849058ae4)](https://github.com/msdio/stackticon)
+  * **Backend**: Java, Spring Boot, Spring Data JPA, MySQL
+  * **Frontend**: Thymeleaf, HTML, CSS, JavaScript
+  * **빌드 및 협업**: Gradle, Git, GitHub
+  * **실시간 통신**: WebSocket (SockJS, STOMP)
+  * **크롤링**: Jsoup (알라딘 사이트 도서 정보 수집)
+  * **로깅**: SLF4J, Logback
+  
 - **특징**  
   - 중고 책 등록 시, 알라딘에서 **도서 정보(제목, 정가, 이미지)** 등을 자동으로 크롤링  
   - **1대1 실시간 채팅**을 통해 메시지(텍스트/이미지) 교환, 읽음/미읽음 관리, 알림 기능 제공  
