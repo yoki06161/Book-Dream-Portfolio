@@ -13,9 +13,14 @@
   - 책을 등록/판매/구매하는 **온라인 중고거래**  
   - 거래 상대방과 **실시간 채팅**(WebSocket)으로 소통
 
+- **특징**  
+  - 중고 책 등록 시, 알라딘에서 **도서 정보(제목, 정가, 이미지)** 등을 자동으로 크롤링  
+  - **1대1 실시간 채팅**을 통해 메시지(텍스트/이미지) 교환, 읽음/미읽음 관리, 알림 기능 제공  
+  - 판매 상태(판매중/예약중/거래완료)를 관리하는 **상태 업데이트** 로직
 
+<br/>
 
-- **사용 기술 스택**
+## 사용 기술 스택
   
   [![stackticon](https://firebasestorage.googleapis.com/v0/b/stackticon-81399.appspot.com/o/images%2F1752196453573?alt=media&token=6b922f67-0896-4169-868c-a0c849058ae4)](https://github.com/msdio/stackticon)
   * **Backend**: Java, Spring Boot, Spring Data JPA, MySQL
@@ -24,11 +29,16 @@
   * **실시간 통신**: WebSocket (SockJS, STOMP)
   * **크롤링**: Jsoup (알라딘 사이트 도서 정보 수집)
   * **로깅**: SLF4J, Logback
-  
-- **특징**  
-  - 중고 책 등록 시, 알라딘에서 **도서 정보(제목, 정가, 이미지)** 등을 자동으로 크롤링  
-  - **1대1 실시간 채팅**을 통해 메시지(텍스트/이미지) 교환, 읽음/미읽음 관리, 알림 기능 제공  
-  - 판매 상태(판매중/예약중/거래완료)를 관리하는 **상태 업데이트** 로직
+
+<br/>
+
+## ERD
+[![](https://mermaid.ink/img/pako:eNq9WNtu20YQ_RWBz46hm2VFb7JJoYIrK6DkBC0EEBtyTRERuexyZdl1DCiJCqSwH5o2aIIiNQz0kgZQAbtOWj_0i0z6H7q8SOJlKcloWj0Y5OzMzszZmTNrHnIyUiBX4SDmNaBioHeMDP01hMaGIGYO_Tf39yky1IymZO5tzWQtgjUq7SFVM-pKZie5ZALLGiCsJBYMoMOEEKNeUmhitKcpEKcu1JVwlDLo8YDAtqbDjIwhfZQU-idNpQcssk1j2ewCQ4V8RDPwA3Wg9XzpUcfwH1r1tiDttJaGqG9BzEw5FSDPKwvSKEj_RcJRxKc53xObvLTRbG61wknXDQJViDMPEXoksZP3lohGGIfrW-kqe8HEmpxiM8AaYdSEv59BMGIvqdDAMJZXW6zyQjglak-PcZ-VSiwLV5MdpGbsIoYwElj0YExkEYV1HBTUWjISTQdqLBKENdqIoJeCm0UA6VsJMW16JQ7J5ifVtiQ2m40ly9uCRqwRJ8UKZajtRZfcUInrtE4xrrHLpR3FOVnCDWhZFAD3PbqzAQfBmrWJ-gapIdzyoluoJgaxJgJCpokMaJCdtCYOBdRKQyKkwwD73-Ksh3dO4wWlSmJe5C4gIkJ6nVli5MCMgdun3QMUDzAWOfCSKNyvCw9Y_BBLKEwbLN8uYTKqaU-DA0aStC91yI6out16EKXplIjmOQaGNQiLWY7DW_uBSqHOjYbV2myKwkdHaaJtyShBcsJ9Ybu9iOSiRUP5AhN-ziihxThv2SU0nk1oi3g1kMqIZmSQRdwXSBVoyVgziYaMOObVz8KpT0fvQcrA8mcvA2_2CO9SdkhKB0kRBURy71vJ-lIUTDuYUfBf9KFF0hCm9waIJebQIIhEB8EUjKbICyJzhPvbxSBx60SeNXzkdKg0Pmvi14HaVhruic7YqLa2BBYT7i93RkzKkwBJBvcR8plGXRMFYaNZFfklKfx2lQ76pIvwrWg9rNA3lbiCe54uOVnzumo2m5qNRow45uT2_2XhBbGLIXyIAFaYBxP8C_P48Z076DC45FUyHc75-cX15dn1xbl9-lpyTl84o4sOF7_V38bKVwosZjcn1-r6_dA--01yLkY3J19N9GcqIRtP3X730jl-47wdSvbT986r3ycWoZt3YBIdt16Az57cfPtcsn8d23-dRwynalHbYDB6fj0j58fXkn38wb4cLvDrT6-w08uRc_ZNKooxI19bsv8cOq_GE6PoaS1j4ZJ6oB5Qmof4H-fO2RuJBuaMrtLzCFk4P_1tj68kP5X0HKi38P5vRzfff50S_DzVxMYB63mRnP5in7-8_jC2j59LztOx88M7toflbJJZp9pFcp8x2qQ-AxLwkzqhJXp9NfSq5eQ7-pSa2myjiGWsfaKpLWeTcBUO0Y9qrpc56twKp2JN4SoE9-EKp0NMBw195TwK7HCkC-kdgHMtFYAfufsfURsTGJ_Ti_TEDKO-2uUqu6Bn0TefwIIPLFMV7y7v3aW5Sm49W_I24SqH3D5XWcutFvJra-X19WyhWC4W8sUV7oCrFLOr-WIpV8jni-ulYjFbPlrhvvTcZlfL5WyucDd_N5cvl4qlMjWAikYQbvgfeLzvPEf_AHwxxkk?type=png)](https://mermaid.live/edit#pako:eNq9WNtu20YQ_RWBz46hm2VFb7JJoYIrK6DkBC0EEBtyTRERuexyZdl1DCiJCqSwH5o2aIIiNQz0kgZQAbtOWj_0i0z6H7q8SOJlKcloWj0Y5OzMzszZmTNrHnIyUiBX4SDmNaBioHeMDP01hMaGIGYO_Tf39yky1IymZO5tzWQtgjUq7SFVM-pKZie5ZALLGiCsJBYMoMOEEKNeUmhitKcpEKcu1JVwlDLo8YDAtqbDjIwhfZQU-idNpQcssk1j2ewCQ4V8RDPwA3Wg9XzpUcfwH1r1tiDttJaGqG9BzEw5FSDPKwvSKEj_RcJRxKc53xObvLTRbG61wknXDQJViDMPEXoksZP3lohGGIfrW-kqe8HEmpxiM8AaYdSEv59BMGIvqdDAMJZXW6zyQjglak-PcZ-VSiwLV5MdpGbsIoYwElj0YExkEYV1HBTUWjISTQdqLBKENdqIoJeCm0UA6VsJMW16JQ7J5ifVtiQ2m40ly9uCRqwRJ8UKZajtRZfcUInrtE4xrrHLpR3FOVnCDWhZFAD3PbqzAQfBmrWJ-gapIdzyoluoJgaxJgJCpokMaJCdtCYOBdRKQyKkwwD73-Ksh3dO4wWlSmJe5C4gIkJ6nVli5MCMgdun3QMUDzAWOfCSKNyvCw9Y_BBLKEwbLN8uYTKqaU-DA0aStC91yI6out16EKXplIjmOQaGNQiLWY7DW_uBSqHOjYbV2myKwkdHaaJtyShBcsJ9Ybu9iOSiRUP5AhN-ziihxThv2SU0nk1oi3g1kMqIZmSQRdwXSBVoyVgziYaMOObVz8KpT0fvQcrA8mcvA2_2CO9SdkhKB0kRBURy71vJ-lIUTDuYUfBf9KFF0hCm9waIJebQIIhEB8EUjKbICyJzhPvbxSBx60SeNXzkdKg0Pmvi14HaVhruic7YqLa2BBYT7i93RkzKkwBJBvcR8plGXRMFYaNZFfklKfx2lQ76pIvwrWg9rNA3lbiCe54uOVnzumo2m5qNRow45uT2_2XhBbGLIXyIAFaYBxP8C_P48Z076DC45FUyHc75-cX15dn1xbl9-lpyTl84o4sOF7_V38bKVwosZjcn1-r6_dA--01yLkY3J19N9GcqIRtP3X730jl-47wdSvbT986r3ycWoZt3YBIdt16Az57cfPtcsn8d23-dRwynalHbYDB6fj0j58fXkn38wb4cLvDrT6-w08uRc_ZNKooxI19bsv8cOq_GE6PoaS1j4ZJ6oB5Qmof4H-fO2RuJBuaMrtLzCFk4P_1tj68kP5X0HKi38P5vRzfff50S_DzVxMYB63mRnP5in7-8_jC2j59LztOx88M7toflbJJZp9pFcp8x2qQ-AxLwkzqhJXp9NfSq5eQ7-pSa2myjiGWsfaKpLWeTcBUO0Y9qrpc56twKp2JN4SoE9-EKp0NMBw195TwK7HCkC-kdgHMtFYAfufsfURsTGJ_Ti_TEDKO-2uUqu6Bn0TefwIIPLFMV7y7v3aW5Sm49W_I24SqH3D5XWcutFvJra-X19WyhWC4W8sUV7oCrFLOr-WIpV8jni-ulYjFbPlrhvvTcZlfL5WyucDd_N5cvl4qlMjWAikYQbvgfeLzvPEf_AHwxxkk)
+
+
+
+
+
 
 <br/>
 
