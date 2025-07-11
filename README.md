@@ -5,7 +5,7 @@
 
 <br/>
 
-## 개요
+## 📝 개요
 
 **Book-Dream**은 **중고 책 거래** 기능과 **실시간 채팅(WebSocket)** 기능을 제공하는 웹 애플리케이션입니다.
 
@@ -20,7 +20,7 @@
 
 <br/>
 
-## 사용 기술 스택
+## 🔧 사용 기술 스택
   
   [![stackticon](https://firebasestorage.googleapis.com/v0/b/stackticon-81399.appspot.com/o/images%2F1752196453573?alt=media&token=6b922f67-0896-4169-868c-a0c849058ae4)](https://github.com/msdio/stackticon)
   * **Backend**: Java, Spring Boot, Spring Data JPA, MySQL
@@ -32,17 +32,17 @@
 
 <br/>
 
-## ERD
+## 📊 ERD
 [![](https://mermaid.ink/img/pako:eNq9WNtu20YQ_RWBz46hm2VFb7JJoYIrK6DkBC0EEBtyTRERuexyZdl1DCiJCqSwH5o2aIIiNQz0kgZQAbtOWj_0i0z6H7q8SOJlKcloWj0Y5OzMzszZmTNrHnIyUiBX4SDmNaBioHeMDP01hMaGIGYO_Tf39yky1IymZO5tzWQtgjUq7SFVM-pKZie5ZALLGiCsJBYMoMOEEKNeUmhitKcpEKcu1JVwlDLo8YDAtqbDjIwhfZQU-idNpQcssk1j2ewCQ4V8RDPwA3Wg9XzpUcfwH1r1tiDttJaGqG9BzEw5FSDPKwvSKEj_RcJRxKc53xObvLTRbG61wknXDQJViDMPEXoksZP3lohGGIfrW-kqe8HEmpxiM8AaYdSEv59BMGIvqdDAMJZXW6zyQjglak-PcZ-VSiwLV5MdpGbsIoYwElj0YExkEYV1HBTUWjISTQdqLBKENdqIoJeCm0UA6VsJMW16JQ7J5ifVtiQ2m40ly9uCRqwRJ8UKZajtRZfcUInrtE4xrrHLpR3FOVnCDWhZFAD3PbqzAQfBmrWJ-gapIdzyoluoJgaxJgJCpokMaJCdtCYOBdRKQyKkwwD73-Ksh3dO4wWlSmJe5C4gIkJ6nVli5MCMgdun3QMUDzAWOfCSKNyvCw9Y_BBLKEwbLN8uYTKqaU-DA0aStC91yI6out16EKXplIjmOQaGNQiLWY7DW_uBSqHOjYbV2myKwkdHaaJtyShBcsJ9Ybu9iOSiRUP5AhN-ziihxThv2SU0nk1oi3g1kMqIZmSQRdwXSBVoyVgziYaMOObVz8KpT0fvQcrA8mcvA2_2CO9SdkhKB0kRBURy71vJ-lIUTDuYUfBf9KFF0hCm9waIJebQIIhEB8EUjKbICyJzhPvbxSBx60SeNXzkdKg0Pmvi14HaVhruic7YqLa2BBYT7i93RkzKkwBJBvcR8plGXRMFYaNZFfklKfx2lQ76pIvwrWg9rNA3lbiCe54uOVnzumo2m5qNRow45uT2_2XhBbGLIXyIAFaYBxP8C_P48Z076DC45FUyHc75-cX15dn1xbl9-lpyTl84o4sOF7_V38bKVwosZjcn1-r6_dA--01yLkY3J19N9GcqIRtP3X730jl-47wdSvbT986r3ycWoZt3YBIdt16Az57cfPtcsn8d23-dRwynalHbYDB6fj0j58fXkn38wb4cLvDrT6-w08uRc_ZNKooxI19bsv8cOq_GE6PoaS1j4ZJ6oB5Qmof4H-fO2RuJBuaMrtLzCFk4P_1tj68kP5X0HKi38P5vRzfff50S_DzVxMYB63mRnP5in7-8_jC2j59LztOx88M7toflbJJZp9pFcp8x2qQ-AxLwkzqhJXp9NfSq5eQ7-pSa2myjiGWsfaKpLWeTcBUO0Y9qrpc56twKp2JN4SoE9-EKp0NMBw195TwK7HCkC-kdgHMtFYAfufsfURsTGJ_Ti_TEDKO-2uUqu6Bn0TefwIIPLFMV7y7v3aW5Sm49W_I24SqH3D5XWcutFvJra-X19WyhWC4W8sUV7oCrFLOr-WIpV8jni-ulYjFbPlrhvvTcZlfL5WyucDd_N5cvl4qlMjWAikYQbvgfeLzvPEf_AHwxxkk?type=png)](https://mermaid.live/edit#pako:eNq9WNtu20YQ_RWBz46hm2VFb7JJoYIrK6DkBC0EEBtyTRERuexyZdl1DCiJCqSwH5o2aIIiNQz0kgZQAbtOWj_0i0z6H7q8SOJlKcloWj0Y5OzMzszZmTNrHnIyUiBX4SDmNaBioHeMDP01hMaGIGYO_Tf39yky1IymZO5tzWQtgjUq7SFVM-pKZie5ZALLGiCsJBYMoMOEEKNeUmhitKcpEKcu1JVwlDLo8YDAtqbDjIwhfZQU-idNpQcssk1j2ewCQ4V8RDPwA3Wg9XzpUcfwH1r1tiDttJaGqG9BzEw5FSDPKwvSKEj_RcJRxKc53xObvLTRbG61wknXDQJViDMPEXoksZP3lohGGIfrW-kqe8HEmpxiM8AaYdSEv59BMGIvqdDAMJZXW6zyQjglak-PcZ-VSiwLV5MdpGbsIoYwElj0YExkEYV1HBTUWjISTQdqLBKENdqIoJeCm0UA6VsJMW16JQ7J5ifVtiQ2m40ly9uCRqwRJ8UKZajtRZfcUInrtE4xrrHLpR3FOVnCDWhZFAD3PbqzAQfBmrWJ-gapIdzyoluoJgaxJgJCpokMaJCdtCYOBdRKQyKkwwD73-Ksh3dO4wWlSmJe5C4gIkJ6nVli5MCMgdun3QMUDzAWOfCSKNyvCw9Y_BBLKEwbLN8uYTKqaU-DA0aStC91yI6out16EKXplIjmOQaGNQiLWY7DW_uBSqHOjYbV2myKwkdHaaJtyShBcsJ9Ybu9iOSiRUP5AhN-ziihxThv2SU0nk1oi3g1kMqIZmSQRdwXSBVoyVgziYaMOObVz8KpT0fvQcrA8mcvA2_2CO9SdkhKB0kRBURy71vJ-lIUTDuYUfBf9KFF0hCm9waIJebQIIhEB8EUjKbICyJzhPvbxSBx60SeNXzkdKg0Pmvi14HaVhruic7YqLa2BBYT7i93RkzKkwBJBvcR8plGXRMFYaNZFfklKfx2lQ76pIvwrWg9rNA3lbiCe54uOVnzumo2m5qNRow45uT2_2XhBbGLIXyIAFaYBxP8C_P48Z076DC45FUyHc75-cX15dn1xbl9-lpyTl84o4sOF7_V38bKVwosZjcn1-r6_dA--01yLkY3J19N9GcqIRtP3X730jl-47wdSvbT986r3ycWoZt3YBIdt16Az57cfPtcsn8d23-dRwynalHbYDB6fj0j58fXkn38wb4cLvDrT6-w08uRc_ZNKooxI19bsv8cOq_GE6PoaS1j4ZJ6oB5Qmof4H-fO2RuJBuaMrtLzCFk4P_1tj68kP5X0HKi38P5vRzfff50S_DzVxMYB63mRnP5in7-8_jC2j59LztOx88M7toflbJJZp9pFcp8x2qQ-AxLwkzqhJXp9NfSq5eQ7-pSa2myjiGWsfaKpLWeTcBUO0Y9qrpc56twKp2JN4SoE9-EKp0NMBw195TwK7HCkC-kdgHMtFYAfufsfURsTGJ_Ti_TEDKO-2uUqu6Bn0TefwIIPLFMV7y7v3aW5Sm49W_I24SqH3D5XWcutFvJra-X19WyhWC4W8sUV7oCrFLOr-WIpV8jni-ulYjFbPlrhvvTcZlfL5WyucDd_N5cvl4qlMjWAikYQbvgfeLzvPEf_AHwxxkk)
-
-
-
-
-
 
 <br/>
 
-### 개인 기여 내용
+## 📖 중고 서적 거래 및 채팅 플로우차트
+[![](https://mermaid.ink/img/pako:eNqNVW1P01AY_Ss394ODZMI6Nl6mMZEhoPIOiYnWD4VWWNwLKV18WZYM2RIYqCOyuJmyQJwSzIwFB-kHf1Hv7X_wubes6yYauw9rb-895zznOfc2g1dSsoIjeFWV1tfQ1IKYRHBtpJedARHbeyVyUqe1koidd-y6-4Tu6rS2H0H0rICcKcg6N-hu4ym6efMOGu1prUTkwxk5PkT2uwo9bNKTHDnWEdyR99Xby-odn6ZKstK_oiqSpvhE3HurzTLKoaIZxkGPyuRnEzhydGsn65kU5ZPGnoiYSSrW7YIOqqomucwh-qYBTHbRpB9LNK8zPg-Wvdkgx3VyssnGe5aYjqgqvYjHkqu9In7q4RjjHPeAw11DSrqLUy3TQ5OD0COdfDv1szeWkfPzOn-YUDRzoQv0Hgcdd43iC2CaZe6wPy728gBGWzy0ViBHXzotGucgE6DMOt8DAywz1zKcVvPk816bU0nKYvKP9rqmeds7wVEnM_C6vm_9PLLODFKroDYF3TqkeS5xbBS8BYU5WvvS9hEtSctxBQr2dmqSo96HgsGjjkgABC93axvCQT81PUz2vg53PCn9TlTisQ3NE5Try7IuGn-m9kE7tbwsHl5nZkd4H_Z0Fe7oZSJcyYgYp6Rh_kMYux5yvKmMZxuxhjodssu8Lk_jDN06b8Dfe8hmk3z93unfFAebZuK2NmnebPvniWBLjKxoUizen4nJ2S5N0xxmBjT5nPKcoPh40sp5srtNTpvOVsnbewW7XLFMA5HzvF38BUQ6NN6uHnRKm-GYs2wTXrfoqpj_TCI7VBiIt3WznGDOJQD3r0KISKVEigfcSdOgx03kmVErtGIZXZO0hVQq4SbTuxXnOPo8P0PqrBlG_grlb8dWT8vnFcDt39AkVfN1gc5z0AXw-ZGyvJhaea5oiH40IGgcYHFpdnrOj9iLB4uenXK9OW580A10bbYX0G1Gt9hRAzk9YK5CQKyLkl2tcGK78Jb5XDQ9x1NvV3OwHz4IMRlHNDWt-HFCURMSe8QZNknE2pqSUEQcgVtZUp8zIVlYsy4lH4PHrWVqKr26hiPPpPgGPKXXZTjix2IS1JRwR1XgU9RoKp3UcCQ4EhziKDiSwS_hebgvOBgOhIVQKDgcDAXCA378CkcEYahvKDQSGB4JCwMjgwMBIevHrzmx0BcIwrTgEPxCQlgYFPxYkWNaSp12vnP8c5f9DedZCbM?type=png)](https://mermaid.live/edit#pako:eNqNVW1P01AY_Ss394ODZMI6Nl6mMZEhoPIOiYnWD4VWWNwLKV18WZYM2RIYqCOyuJmyQJwSzIwFB-kHf1Hv7X_wubes6yYauw9rb-895zznOfc2g1dSsoIjeFWV1tfQ1IKYRHBtpJedARHbeyVyUqe1koidd-y6-4Tu6rS2H0H0rICcKcg6N-hu4ym6efMOGu1prUTkwxk5PkT2uwo9bNKTHDnWEdyR99Xby-odn6ZKstK_oiqSpvhE3HurzTLKoaIZxkGPyuRnEzhydGsn65kU5ZPGnoiYSSrW7YIOqqomucwh-qYBTHbRpB9LNK8zPg-Wvdkgx3VyssnGe5aYjqgqvYjHkqu9In7q4RjjHPeAw11DSrqLUy3TQ5OD0COdfDv1szeWkfPzOn-YUDRzoQv0Hgcdd43iC2CaZe6wPy728gBGWzy0ViBHXzotGucgE6DMOt8DAywz1zKcVvPk816bU0nKYvKP9rqmeds7wVEnM_C6vm_9PLLODFKroDYF3TqkeS5xbBS8BYU5WvvS9hEtSctxBQr2dmqSo96HgsGjjkgABC93axvCQT81PUz2vg53PCn9TlTisQ3NE5Try7IuGn-m9kE7tbwsHl5nZkd4H_Z0Fe7oZSJcyYgYp6Rh_kMYux5yvKmMZxuxhjodssu8Lk_jDN06b8Dfe8hmk3z93unfFAebZuK2NmnebPvniWBLjKxoUizen4nJ2S5N0xxmBjT5nPKcoPh40sp5srtNTpvOVsnbewW7XLFMA5HzvF38BUQ6NN6uHnRKm-GYs2wTXrfoqpj_TCI7VBiIt3WznGDOJQD3r0KISKVEigfcSdOgx03kmVErtGIZXZO0hVQq4SbTuxXnOPo8P0PqrBlG_grlb8dWT8vnFcDt39AkVfN1gc5z0AXw-ZGyvJhaea5oiH40IGgcYHFpdnrOj9iLB4uenXK9OW580A10bbYX0G1Gt9hRAzk9YK5CQKyLkl2tcGK78Jb5XDQ9x1NvV3OwHz4IMRlHNDWt-HFCURMSe8QZNknE2pqSUEQcgVtZUp8zIVlYsy4lH4PHrWVqKr26hiPPpPgGPKXXZTjix2IS1JRwR1XgU9RoKp3UcCQ4EhziKDiSwS_hebgvOBgOhIVQKDgcDAXCA378CkcEYahvKDQSGB4JCwMjgwMBIevHrzmx0BcIwrTgEPxCQlgYFPxYkWNaSp12vnP8c5f9DedZCbM)
+
+<br/>
+
+## 👨‍💻 개인 기여 내용
 
 #### 1. 주요 담당 기능
 - **중고거래 로직**: `TradeController`, `TradeService`를 중심으로 책 등록/수정/삭제 및 판매 상태 변경 기능을 **구현했습니다.** Jsoup을 이용한 외부 사이트 도서 정보 크롤링 기능을 **개발했습니다.**
@@ -61,7 +61,7 @@
     
 <br/>
 
-## 실행 방법
+## 🚀 실행 방법
 
 1. **레포지토리 클론**  
    - 원격 저장소에서 프로젝트를 클론 받은 뒤, 프로젝트 디렉토리로 이동합니다.
@@ -88,7 +88,7 @@
 
 <br/>
 
-## 주요 기능 소개
+## ✨ 주요 기능 소개
 
 ### 1) 중고 책 거래
 
@@ -118,7 +118,7 @@
 
 <br/>
 
-## 화면 예시
+## 🖼️ 화면 예시
 
 - **중고 서적 목록**
 ![프로젝트 리스트](https://github.com/user-attachments/assets/403c36d5-f502-4c1a-b5cb-f47447bafbcf)
