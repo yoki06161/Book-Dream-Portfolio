@@ -22,7 +22,10 @@
 
 ## 🔧 사용 기술 스택
   
-  [![stackticon](https://firebasestorage.googleapis.com/v0/b/stackticon-81399.appspot.com/o/images%2F1752196453573?alt=media&token=6b922f67-0896-4169-868c-a0c849058ae4)](https://github.com/msdio/stackticon)
+<a href="https://github.com/msdio/stackticon" target="_blank">
+  <img src="https://firebasestorage.googleapis.com/v0/b/stackticon-81399.appspot.com/o/images%2F1752196453573?alt=media&token=6b922f67-0896-4169-868c-a0c849058ae4" alt="stackticon" width="100%">
+</a>
+
   * **Backend**: Java, Spring Boot, Spring Data JPA, MySQL
   * **Frontend**: Thymeleaf, HTML, CSS, JavaScript
   * **빌드 및 협업**: Gradle, Git, GitHub
