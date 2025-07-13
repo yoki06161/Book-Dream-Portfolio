@@ -5,21 +5,13 @@
 
 <br/>
 
-## 개요
+## 📝 개요
 
 **Book-Dream**은 **중고 책 거래** 기능과 **실시간 채팅(WebSocket)** 기능을 제공하는 웹 애플리케이션입니다.
 
 - **주요 목적**  
   - 책을 등록/판매/구매하는 **온라인 중고거래**  
   - 거래 상대방과 **실시간 채팅**(WebSocket)으로 소통
-
-- **사용 기술 스택**  
-  - **Backend**: Java, Spring Boot, Spring Data JPA, MySQL  
-  - **Frontend**: Thymeleaf, HTML, CSS, JavaScript  
-  - **실시간 통신**: WebSocket (SockJS, STOMP)  
-  - **크롤링**: Jsoup (알라딘 사이트 도서 정보 수집)
-  - **로깅**: SLF4J, Logback
-  - **빌드 및 협업**: Gradle, Git, GitHub  
 
 - **특징**  
   - 중고 책 등록 시, 알라딘에서 **도서 정보(제목, 정가, 이미지)** 등을 자동으로 크롤링  
@@ -28,46 +20,51 @@
 
 <br/>
 
-## 개인 기여 내용
-### 1. 팀 프로젝트 담당 기능
+## 🔧 사용 기술 스택
+  
+<a href="https://github.com/msdio/stackticon" target="_blank">
+  <img src="https://firebasestorage.googleapis.com/v0/b/stackticon-81399.appspot.com/o/images%2F1752196453573?alt=media&token=6b922f67-0896-4169-868c-a0c849058ae4" alt="stackticon" width="100%">
+</a>
 
-팀 프로젝트 당시 아래 기능들의 설계와 구현을 주도적으로 담당했습니다.
-
-1. **중고거래 로직**  
-   - `TradeController` / `TradeService` / `Trade` 엔티티를 이용해  
-     - **책 등록/수정/삭제**, 상태 변경(판매중/예약중/거래완료) 기능 구현  
-   - 알라딘 사이트 **크롤링(`TradeCrawling`)**으로 도서 정보(제목/정가/이미지) 자동 입력
-
-2. **실시간 채팅(WebSocket)**  
-   - `ChatController`, `ChatService`를 작성하여  
-     - 메시지 전송/수신, 이미지를 포함한 **실시간 채팅**, **읽음 처리**, **새 메시지 알림** 등 구현  
-   - `WebSocketConfig`로 SockJS & STOMP Endpoint 설정  
-   - `ChatRoom`, `Chat` 엔티티 설계: **unreadCount**(미읽은 메시지 수), **나가기(LEAVE) 이벤트** 처리 등
-
-### 2. 코드 품질 개선 및 안정성 강화
-
-단순 기능 구현을 넘어, 프로젝트의 안정성과 유지보수성을 높이기 위해 다음과 같은 리팩토링 및 버그 수정을 진행했습니다.
-
-* **의존성 관리 개선**: 기존의 필드 주입(`@Autowired`) 방식을 **생성자 주입**(`@RequiredArgsConstructor`) 방식으로 전면 수정하여, **순환 참조를 방지**하고 테스트 용이성을 확보하는 등 SOLID 원칙을 적용했습니다.
-* **체계적인 로깅 시스템 구축**: 모든 `e.printStackTrace()` 호출을 **SLF4J 로거(`logger.error`)**로 대체하여, 운영 환경에서의 체계적인 예외 추적 및 관리가 가능하도록 개선했습니다.
-* **JPA-DB 네이밍 불일치 해결**: Java 엔티티의 필드명(카멜 케이스)과 DB 컬럼명(스네이크 케이스)의 불일치로 인해 발생하던 `Field ... doesn't have a default value` 오류를 `@Column` 어노테이션으로 명시하여 해결했습니다.
-* **방어적 프로그래밍 적용**: 이미지 파일 저장 시, 지정된 디렉토리가 없을 경우 자동으로 생성하는 로직을 추가하여 `NoSuchFileException` 발생 가능성을 원천적으로 차단했습니다.
-
-### 3. 지속적인 디버깅 및 트러블슈팅
-
-프로젝트를 완성하는 과정에서 발생한 복잡한 문제들을 체계적으로 분석하고 해결했습니다.
-
-* **Spring Security & Thymeleaf 렌더링 충돌 해결**
-    * **문제**: 익명 사용자가 페이지에 접근할 때, Thymeleaf가 CSRF 토큰을 렌더링하는 과정에서 세션이 없어 `IllegalStateException`이 발생하는 복합적인 문제를 발견했습니다.
-    * **해결**: **Spring Security의 세션 생성 정책**과 **Thymeleaf의 렌더링 라이프사이클**을 분석하여, 모든 요청에 대해 항상 세션을 미리 생성하도록(`SessionCreationPolicy.ALWAYS`) 설정을 변경함으로써 근본적인 원인을 해결했습니다.
-
-* **통합 사용자 인증 로직 구현**
-    * **문제**: 일반 가입자와 소셜 로그인 사용자의 정보가 별도 테이블(`site_user`, `member`)에 저장되어 있어, 사용자 이름 조회 시 `DataNotFoundException`이 발생하는 문제를 확인했습니다.
-    * **해결**: 두 테이블을 순차적으로 모두 조회하여 어떤 방식의 사용자든 정보를 가져올 수 있도록 서비스 로직을 통합하고 개선했습니다.
+  * **Backend**: Java, Spring Boot, Spring Data JPA, MySQL
+  * **Frontend**: Thymeleaf, HTML, CSS, JavaScript
+  * **빌드 및 협업**: Gradle, Git, GitHub
+  * **실시간 통신**: WebSocket (SockJS, STOMP)
+  * **크롤링**: Jsoup (알라딘 사이트 도서 정보 수집)
+  * **로깅**: SLF4J, Logback
 
 <br/>
 
-## 실행 방법
+## 📊 ERD
+[![](https://mermaid.ink/img/pako:eNq9WNtu20YQ_RWBz46hm2VFb7JJoYIrK6DkBC0EEBtyTRERuexyZdl1DCiJCqSwH5o2aIIiNQz0kgZQAbtOWj_0i0z6H7q8SOJlKcloWj0Y5OzMzszZmTNrHnIyUiBX4SDmNaBioHeMDP01hMaGIGYO_Tf39yky1IymZO5tzWQtgjUq7SFVM-pKZie5ZALLGiCsJBYMoMOEEKNeUmhitKcpEKcu1JVwlDLo8YDAtqbDjIwhfZQU-idNpQcssk1j2ewCQ4V8RDPwA3Wg9XzpUcfwH1r1tiDttJaGqG9BzEw5FSDPKwvSKEj_RcJRxKc53xObvLTRbG61wknXDQJViDMPEXoksZP3lohGGIfrW-kqe8HEmpxiM8AaYdSEv59BMGIvqdDAMJZXW6zyQjglak-PcZ-VSiwLV5MdpGbsIoYwElj0YExkEYV1HBTUWjISTQdqLBKENdqIoJeCm0UA6VsJMW16JQ7J5ifVtiQ2m40ly9uCRqwRJ8UKZajtRZfcUInrtE4xrrHLpR3FOVnCDWhZFAD3PbqzAQfBmrWJ-gapIdzyoluoJgaxJgJCpokMaJCdtCYOBdRKQyKkwwD73-Ksh3dO4wWlSmJe5C4gIkJ6nVli5MCMgdun3QMUDzAWOfCSKNyvCw9Y_BBLKEwbLN8uYTKqaU-DA0aStC91yI6out16EKXplIjmOQaGNQiLWY7DW_uBSqHOjYbV2myKwkdHaaJtyShBcsJ9Ybu9iOSiRUP5AhN-ziihxThv2SU0nk1oi3g1kMqIZmSQRdwXSBVoyVgziYaMOObVz8KpT0fvQcrA8mcvA2_2CO9SdkhKB0kRBURy71vJ-lIUTDuYUfBf9KFF0hCm9waIJebQIIhEB8EUjKbICyJzhPvbxSBx60SeNXzkdKg0Pmvi14HaVhruic7YqLa2BBYT7i93RkzKkwBJBvcR8plGXRMFYaNZFfklKfx2lQ76pIvwrWg9rNA3lbiCe54uOVnzumo2m5qNRow45uT2_2XhBbGLIXyIAFaYBxP8C_P48Z076DC45FUyHc75-cX15dn1xbl9-lpyTl84o4sOF7_V38bKVwosZjcn1-r6_dA--01yLkY3J19N9GcqIRtP3X730jl-47wdSvbT986r3ycWoZt3YBIdt16Az57cfPtcsn8d23-dRwynalHbYDB6fj0j58fXkn38wb4cLvDrT6-w08uRc_ZNKooxI19bsv8cOq_GE6PoaS1j4ZJ6oB5Qmof4H-fO2RuJBuaMrtLzCFk4P_1tj68kP5X0HKi38P5vRzfff50S_DzVxMYB63mRnP5in7-8_jC2j59LztOx88M7toflbJJZp9pFcp8x2qQ-AxLwkzqhJXp9NfSq5eQ7-pSa2myjiGWsfaKpLWeTcBUO0Y9qrpc56twKp2JN4SoE9-EKp0NMBw195TwK7HCkC-kdgHMtFYAfufsfURsTGJ_Ti_TEDKO-2uUqu6Bn0TefwIIPLFMV7y7v3aW5Sm49W_I24SqH3D5XWcutFvJra-X19WyhWC4W8sUV7oCrFLOr-WIpV8jni-ulYjFbPlrhvvTcZlfL5WyucDd_N5cvl4qlMjWAikYQbvgfeLzvPEf_AHwxxkk?type=png)](https://mermaid.live/edit#pako:eNq9WNtu20YQ_RWBz46hm2VFb7JJoYIrK6DkBC0EEBtyTRERuexyZdl1DCiJCqSwH5o2aIIiNQz0kgZQAbtOWj_0i0z6H7q8SOJlKcloWj0Y5OzMzszZmTNrHnIyUiBX4SDmNaBioHeMDP01hMaGIGYO_Tf39yky1IymZO5tzWQtgjUq7SFVM-pKZie5ZALLGiCsJBYMoMOEEKNeUmhitKcpEKcu1JVwlDLo8YDAtqbDjIwhfZQU-idNpQcssk1j2ewCQ4V8RDPwA3Wg9XzpUcfwH1r1tiDttJaGqG9BzEw5FSDPKwvSKEj_RcJRxKc53xObvLTRbG61wknXDQJViDMPEXoksZP3lohGGIfrW-kqe8HEmpxiM8AaYdSEv59BMGIvqdDAMJZXW6zyQjglak-PcZ-VSiwLV5MdpGbsIoYwElj0YExkEYV1HBTUWjISTQdqLBKENdqIoJeCm0UA6VsJMW16JQ7J5ifVtiQ2m40ly9uCRqwRJ8UKZajtRZfcUInrtE4xrrHLpR3FOVnCDWhZFAD3PbqzAQfBmrWJ-gapIdzyoluoJgaxJgJCpokMaJCdtCYOBdRKQyKkwwD73-Ksh3dO4wWlSmJe5C4gIkJ6nVli5MCMgdun3QMUDzAWOfCSKNyvCw9Y_BBLKEwbLN8uYTKqaU-DA0aStC91yI6out16EKXplIjmOQaGNQiLWY7DW_uBSqHOjYbV2myKwkdHaaJtyShBcsJ9Ybu9iOSiRUP5AhN-ziihxThv2SU0nk1oi3g1kMqIZmSQRdwXSBVoyVgziYaMOObVz8KpT0fvQcrA8mcvA2_2CO9SdkhKB0kRBURy71vJ-lIUTDuYUfBf9KFF0hCm9waIJebQIIhEB8EUjKbICyJzhPvbxSBx60SeNXzkdKg0Pmvi14HaVhruic7YqLa2BBYT7i93RkzKkwBJBvcR8plGXRMFYaNZFfklKfx2lQ76pIvwrWg9rNA3lbiCe54uOVnzumo2m5qNRow45uT2_2XhBbGLIXyIAFaYBxP8C_P48Z076DC45FUyHc75-cX15dn1xbl9-lpyTl84o4sOF7_V38bKVwosZjcn1-r6_dA--01yLkY3J19N9GcqIRtP3X730jl-47wdSvbT986r3ycWoZt3YBIdt16Az57cfPtcsn8d23-dRwynalHbYDB6fj0j58fXkn38wb4cLvDrT6-w08uRc_ZNKooxI19bsv8cOq_GE6PoaS1j4ZJ6oB5Qmof4H-fO2RuJBuaMrtLzCFk4P_1tj68kP5X0HKi38P5vRzfff50S_DzVxMYB63mRnP5in7-8_jC2j59LztOx88M7toflbJJZp9pFcp8x2qQ-AxLwkzqhJXp9NfSq5eQ7-pSa2myjiGWsfaKpLWeTcBUO0Y9qrpc56twKp2JN4SoE9-EKp0NMBw195TwK7HCkC-kdgHMtFYAfufsfURsTGJ_Ti_TEDKO-2uUqu6Bn0TefwIIPLFMV7y7v3aW5Sm49W_I24SqH3D5XWcutFvJra-X19WyhWC4W8sUV7oCrFLOr-WIpV8jni-ulYjFbPlrhvvTcZlfL5WyucDd_N5cvl4qlMjWAikYQbvgfeLzvPEf_AHwxxkk)
+
+<br/>
+
+## 📖 중고 서적 거래 및 채팅 플로우차트
+[![](https://mermaid.ink/img/pako:eNqNVW1P01AY_Ss394ODZMI6Nl6mMZEhoPIOiYnWD4VWWNwLKV18WZYM2RIYqCOyuJmyQJwSzIwFB-kHf1Hv7X_wubes6yYauw9rb-895zznOfc2g1dSsoIjeFWV1tfQ1IKYRHBtpJedARHbeyVyUqe1koidd-y6-4Tu6rS2H0H0rICcKcg6N-hu4ym6efMOGu1prUTkwxk5PkT2uwo9bNKTHDnWEdyR99Xby-odn6ZKstK_oiqSpvhE3HurzTLKoaIZxkGPyuRnEzhydGsn65kU5ZPGnoiYSSrW7YIOqqomucwh-qYBTHbRpB9LNK8zPg-Wvdkgx3VyssnGe5aYjqgqvYjHkqu9In7q4RjjHPeAw11DSrqLUy3TQ5OD0COdfDv1szeWkfPzOn-YUDRzoQv0Hgcdd43iC2CaZe6wPy728gBGWzy0ViBHXzotGucgE6DMOt8DAywz1zKcVvPk816bU0nKYvKP9rqmeds7wVEnM_C6vm_9PLLODFKroDYF3TqkeS5xbBS8BYU5WvvS9hEtSctxBQr2dmqSo96HgsGjjkgABC93axvCQT81PUz2vg53PCn9TlTisQ3NE5Try7IuGn-m9kE7tbwsHl5nZkd4H_Z0Fe7oZSJcyYgYp6Rh_kMYux5yvKmMZxuxhjodssu8Lk_jDN06b8Dfe8hmk3z93unfFAebZuK2NmnebPvniWBLjKxoUizen4nJ2S5N0xxmBjT5nPKcoPh40sp5srtNTpvOVsnbewW7XLFMA5HzvF38BUQ6NN6uHnRKm-GYs2wTXrfoqpj_TCI7VBiIt3WznGDOJQD3r0KISKVEigfcSdOgx03kmVErtGIZXZO0hVQq4SbTuxXnOPo8P0PqrBlG_grlb8dWT8vnFcDt39AkVfN1gc5z0AXw-ZGyvJhaea5oiH40IGgcYHFpdnrOj9iLB4uenXK9OW580A10bbYX0G1Gt9hRAzk9YK5CQKyLkl2tcGK78Jb5XDQ9x1NvV3OwHz4IMRlHNDWt-HFCURMSe8QZNknE2pqSUEQcgVtZUp8zIVlYsy4lH4PHrWVqKr26hiPPpPgGPKXXZTjix2IS1JRwR1XgU9RoKp3UcCQ4EhziKDiSwS_hebgvOBgOhIVQKDgcDAXCA378CkcEYahvKDQSGB4JCwMjgwMBIevHrzmx0BcIwrTgEPxCQlgYFPxYkWNaSp12vnP8c5f9DedZCbM?type=png)](https://mermaid.live/edit#pako:eNqNVW1P01AY_Ss394ODZMI6Nl6mMZEhoPIOiYnWD4VWWNwLKV18WZYM2RIYqCOyuJmyQJwSzIwFB-kHf1Hv7X_wubes6yYauw9rb-895zznOfc2g1dSsoIjeFWV1tfQ1IKYRHBtpJedARHbeyVyUqe1koidd-y6-4Tu6rS2H0H0rICcKcg6N-hu4ym6efMOGu1prUTkwxk5PkT2uwo9bNKTHDnWEdyR99Xby-odn6ZKstK_oiqSpvhE3HurzTLKoaIZxkGPyuRnEzhydGsn65kU5ZPGnoiYSSrW7YIOqqomucwh-qYBTHbRpB9LNK8zPg-Wvdkgx3VyssnGe5aYjqgqvYjHkqu9In7q4RjjHPeAw11DSrqLUy3TQ5OD0COdfDv1szeWkfPzOn-YUDRzoQv0Hgcdd43iC2CaZe6wPy728gBGWzy0ViBHXzotGucgE6DMOt8DAywz1zKcVvPk816bU0nKYvKP9rqmeds7wVEnM_C6vm_9PLLODFKroDYF3TqkeS5xbBS8BYU5WvvS9hEtSctxBQr2dmqSo96HgsGjjkgABC93axvCQT81PUz2vg53PCn9TlTisQ3NE5Try7IuGn-m9kE7tbwsHl5nZkd4H_Z0Fe7oZSJcyYgYp6Rh_kMYux5yvKmMZxuxhjodssu8Lk_jDN06b8Dfe8hmk3z93unfFAebZuK2NmnebPvniWBLjKxoUizen4nJ2S5N0xxmBjT5nPKcoPh40sp5srtNTpvOVsnbewW7XLFMA5HzvF38BUQ6NN6uHnRKm-GYs2wTXrfoqpj_TCI7VBiIt3WznGDOJQD3r0KISKVEigfcSdOgx03kmVErtGIZXZO0hVQq4SbTuxXnOPo8P0PqrBlG_grlb8dWT8vnFcDt39AkVfN1gc5z0AXw-ZGyvJhaea5oiH40IGgcYHFpdnrOj9iLB4uenXK9OW580A10bbYX0G1Gt9hRAzk9YK5CQKyLkl2tcGK78Jb5XDQ9x1NvV3OwHz4IMRlHNDWt-HFCURMSe8QZNknE2pqSUEQcgVtZUp8zIVlYsy4lH4PHrWVqKr26hiPPpPgGPKXXZTjix2IS1JRwR1XgU9RoKp3UcCQ4EhziKDiSwS_hebgvOBgOhIVQKDgcDAXCA378CkcEYahvKDQSGB4JCwMjgwMBIevHrzmx0BcIwrTgEPxCQlgYFPxYkWNaSp12vnP8c5f9DedZCbM)
+
+<br/>
+
+## 👨‍💻 개인 기여 내용
+
+#### 1. 주요 담당 기능
+- **중고거래 로직**: `TradeController`, `TradeService`를 중심으로 책 등록/수정/삭제 및 판매 상태 변경 기능을 **구현했습니다.** Jsoup을 이용한 외부 사이트 도서 정보 크롤링 기능을 **개발했습니다.**
+- **실시간 채팅(WebSocket)**: `ChatController`, `ChatService` 및 STOMP, SockJS를 활용하여 1:1 실시간 채팅 기능을 **구현했습니다.** 메시지 읽음 처리, 이미지 전송, 안 읽음 메시지 알림 등의 기능을 포함합니다.
+
+#### 2. 코드 품질 개선
+- **안정성 및 유지보수성 향상**:
+    - **생성자 주입**: `@Autowired` 필드 주입을 `@RequiredArgsConstructor`를 이용한 생성자 주입 방식으로 변경하여 의존성 결합도를 낮추고 순환 참조를 **방지했습니다.**
+    - **체계적인 로깅**: `e.printStackTrace()`를 SLF4J 로거로 대체하여 예외 추적 시스템을 **구축했습니다.**
+    - **방어적 프로그래밍**: 파일 저장 시 디렉토리 존재 여부를 미리 확인하고 생성하는 로직을 추가하여 `NoSuchFileException` 발생 가능성을 원천적으로 **차단했습니다.**
+
+#### 3. 문제 해결 및 디버깅
+- **Spring Security & Thymeleaf 렌더링 충돌 해결**: 익명 사용자의 CSRF 토큰 렌더링 과정에서 발생하던 `IllegalStateException`을 세션 생성 정책 변경(`SessionCreationPolicy.ALWAYS`)을 통해 **해결했습니다.**
+- **통합 인증 로직 구현**: 일반 가입자와 소셜 로그인 사용자의 테이블이 이원화되어 발생하던 `DataNotFoundException`을 두 테이블을 모두 조회하는 통합 서비스 로직으로 **개선했습니다.**
+- **실시간 메시지 배지 기능 구현**: 헤더에 전체 안 읽은 메시지 수를 표시하고, WebSocket과 REST API를 연동하여 실시간으로 업데이트하는 기능을 **구현했습니다.**
+    
+<br/>
+
+## 🚀 실행 방법
 
 1. **레포지토리 클론**  
    - 원격 저장소에서 프로젝트를 클론 받은 뒤, 프로젝트 디렉토리로 이동합니다.
@@ -94,7 +91,7 @@
 
 <br/>
 
-## 주요 기능 소개
+## ✨ 주요 기능 소개
 
 ### 1) 중고 책 거래
 
@@ -124,7 +121,7 @@
 
 <br/>
 
-## 화면 예시
+## 🖼️ 화면 예시
 
 - **중고 서적 목록**
 ![프로젝트 리스트](https://github.com/user-attachments/assets/403c36d5-f502-4c1a-b5cb-f47447bafbcf)
