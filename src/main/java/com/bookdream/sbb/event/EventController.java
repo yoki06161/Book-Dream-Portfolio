@@ -6,6 +6,7 @@ import java.security.Principal;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,7 +23,8 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
-    private final String uploadDir = "C:/Users/TJ/git/Book-Dream/src/main/resources/static/image/eventimage/";
+    @Value("${file.upload-dir}") // 이 어노테이션 추가
+    private String uploadDir;
 
     // 이벤트 메인 페이지를 반환하는 메서드
     @GetMapping("")

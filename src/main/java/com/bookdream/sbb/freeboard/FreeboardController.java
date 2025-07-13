@@ -6,6 +6,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -39,7 +40,8 @@ public class FreeboardController {
     private CommentService commentService;
 
 
-    private final String uploadDir = "C:/Users/TJ/git/Book-Dream/src/main/resources/static/image/freeboard/";
+    @Value("${file.upload-dir}") // 이 어노테이션 추가
+    private String uploadDir;
 
     @GetMapping("")
     public String list(@RequestParam(value = "keyword", required = false) String keyword,

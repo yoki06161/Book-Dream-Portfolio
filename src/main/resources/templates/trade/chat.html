@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html layout:decorate="~{layout}">
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
 <title>채팅</title>
 <style>
@@ -201,12 +201,6 @@ function connectChat() {
         fetchChatHistory(); // 과거 대화 내역 불러오기
         stompClientChat.send("/app/chat.userJoined", {}, JSON.stringify({ chatRoomId: chatRoomId, userId: senderId }));
     });
-}
-
-function notifyRead(messageId) {
-    if (stompClientChat && stompClientChat.connected && messageId) {
-        stompClientChat.send("/app/chat.readMessage", {}, JSON.stringify({ 'id': messageId }));
-    }
 }
 
 function sendMessage() {

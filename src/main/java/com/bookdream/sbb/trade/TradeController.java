@@ -1,6 +1,7 @@
 package com.bookdream.sbb.trade;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -31,7 +32,8 @@ public class TradeController {
     private final TradeCrawling tradeCrawling;
 
 
-    private final String uploadDir = "C:/Users/박재성/Desktop/bookdream_images/";
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     @GetMapping("/list")
     public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "kw", defaultValue = "") String kw) {
