@@ -65,7 +65,7 @@ public class TradeController {
             Trade trade = tradeService.getTradeById(idx);
             trade.setStatus(status);
             tradeService.updateTrade(idx, trade);
-            redirectAttributes.addFlashAttribute("successMsg", "상태가 성공적으로 변경되었습니다!");
+            redirectAttributes.addFlashAttribute("successMsg", "상태가 성공적으로 변경되었습니다.");
         } catch (Exception e) {
             logger.error("상태 업데이트 중 오류 발생. idx: {}, status: {}", idx, status, e);
             redirectAttributes.addFlashAttribute("errorMsg", "상태 변경에 실패했습니다.");
@@ -118,7 +118,7 @@ public class TradeController {
             }
 
             tradeService.createTrade(trade);
-            redirectAttributes.addFlashAttribute("successMsg", "상품 등록 성공!!");
+            redirectAttributes.addFlashAttribute("successMsg", "상품 등록에 성공했습니다.");
             return "redirect:/trade/list";
 
         } catch (Exception e) {
@@ -174,7 +174,7 @@ public class TradeController {
             }
 
             tradeService.updateTrade(idx, updatedTrade);
-            redirectAttributes.addFlashAttribute("successMsg", "상품 수정 성공!!");
+            redirectAttributes.addFlashAttribute("successMsg", "상품 수정에 성공했습니다.");
             return "redirect:/trade/detail/" + idx;
         } catch (Exception e) {
             logger.error("상품 수정 중 오류 발생. idx: {}", idx, e);
@@ -196,7 +196,7 @@ public class TradeController {
                 }
             }
             tradeService.deleteTrade(idx);
-            redirectAttributes.addFlashAttribute("successMsg", "상품 삭제 성공!!");
+            redirectAttributes.addFlashAttribute("successMsg", "상품 삭제에 성공했습니다.");
         } catch (Exception e) {
             logger.error("상품 삭제 중 오류 발생. idx: {}", idx, e);
             redirectAttributes.addFlashAttribute("errorMsg", "상품 삭제에 실패했습니다.");

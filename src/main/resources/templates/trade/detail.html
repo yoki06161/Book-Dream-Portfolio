@@ -118,6 +118,8 @@
 <body>
     <div layout:fragment="content" class="container my-3">
         <h2 class="border-bottom py-2">거래 상세 정보</h2>
+        <div th:if="${successMsg}" class="alert alert-success" role="alert" th:text="${successMsg}"></div>
+        <div th:if="${errorMsg}" class="alert alert-danger" role="alert" th:text="${errorMsg}"></div>
         <div class="card my-3">
             <div class="row no-gutters">
                 <div class="col-md-4 text-center my-auto">
