@@ -147,7 +147,6 @@ public class ChatService {
     }
 
     public ChatRoom createChatRoom(String senderId, String receiverId, int tradeIdx) {
-        // 5. orElseGet 내부 변수명 변경하여 중복 해결
         return chatRoomRepository.findBySenderIdAndReceiverIdAndTradeIdx(senderId, receiverId, tradeIdx)
                 .orElseGet(() -> {
                     Trade trade = tradeService.getTradeById(tradeIdx);
@@ -198,34 +197,12 @@ public class ChatService {
         });
     }
 
-    public void incrementNewMessagesCount(Long chatRoomId, String senderId, String currentUserId) {
-        chatRoomRepository.findById(chatRoomId).ifPresent(chatRoom -> {
-            if (!activeUsers.getOrDefault(chatRoomId, ConcurrentHashMap.newKeySet()).contains(chatRoom.getReceiverId())) {
-                chatRoom.setNewMessagesCountForReceiver(chatRoom.getNewMessagesCountForReceiver() + 1);
-            } else if (!activeUsers.getOrDefault(chatRoomId, ConcurrentHashMap.newKeySet()).contains(chatRoom.getSenderId())) {
-                chatRoom.setNewMessagesCountForSender(chatRoom.getNewMessagesCountForSender() + 1);
-            }
-            chatRoomRepository.save(chatRoom);
-        });
-    }
-
     public void resetNewMessagesCount(Long chatRoomId, String userId) {
         chatRoomRepository.findById(chatRoomId).ifPresent(chatRoom -> {
             if (userId.equals(chatRoom.getReceiverId())) {
                 chatRoom.setNewMessagesCountForReceiver(0);
             } else {
                 chatRoom.setNewMessagesCountForSender(0);
-            }
-            chatRoomRepository.save(chatRoom);
-        });
-    }
-
-    private void updateNewMessagesCount(Long chatRoomId, String senderId) {
-        chatRoomRepository.findById(chatRoomId).ifPresent(chatRoom -> {
-            if (!activeUsers.getOrDefault(chatRoomId, ConcurrentHashMap.newKeySet()).contains(chatRoom.getReceiverId())) {
-                chatRoom.setNewMessagesCountForReceiver(chatRoom.getNewMessagesCountForReceiver() + 1);
-            } else if (!activeUsers.getOrDefault(chatRoomId, ConcurrentHashMap.newKeySet()).contains(chatRoom.getSenderId())) {
-                chatRoom.setNewMessagesCountForSender(chatRoom.getNewMessagesCountForSender() + 1);
             }
             chatRoomRepository.save(chatRoom);
         });

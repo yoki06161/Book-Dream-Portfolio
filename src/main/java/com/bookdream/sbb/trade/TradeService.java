@@ -66,9 +66,9 @@ public class TradeService {
         }
         try {
             tradeRepository.save(trade);
-            System.out.println("Trade saved successfully: " + trade);
+            logger.info("Trade saved successfully: {}", trade);
         } catch (Exception e) {
-            System.out.println("Error while saving trade: " + e.getMessage());
+            logger.error("Error while saving trade: {}", e.getMessage(), e);
             throw e;
         }
     }

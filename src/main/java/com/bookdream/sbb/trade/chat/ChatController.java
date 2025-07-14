@@ -102,19 +102,16 @@ public class ChatController {
         return ResponseEntity.ok("채팅방을 나갔습니다.");
     }
 
-    @MessageMapping("/chat.sendMessage")
-    @SendTo("/topic/public")
-    public Chat sendMessage(Chat chatMessage, Principal principal) throws InterruptedException {
-        if (chatMessage.getType() == Chat.MessageType.IMAGE) {
-            Thread.sleep(1000); // 이미지 메시지 딜레이 (선택 사항)
+        @MessageMapping("/chat.sendMessage")
+        @SendTo("/topic/public")
+        public Chat sendMessage(Chat chatMessage, Principal principal) {
+
+            // 서비스의 saveChat을 호출하여 '안 읽음' 카운트 등 모든 상태를 결정합니다.
+            chatService.saveChat(chatMessage);
+
+            // 서버에서 모든 상태가 결정된 chatMessage 객체를 클라이언트로 반환합니다.
+            return chatMessage;
         }
-
-        // 서비스의 saveChat을 호출하여 '안 읽음' 카운트 등 모든 상태를 결정합니다.
-        chatService.saveChat(chatMessage);
-
-        // 서버에서 모든 상태가 결정된 chatMessage 객체를 클라이언트로 반환합니다.
-        return chatMessage;
-    }
 
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/public")

@@ -18,7 +18,7 @@ public class Chat {
     private Long id;
     private String senderId;
 
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "TEXT")
     private String message;
     private LocalDateTime createdAt;
     private Long chatRoomId;

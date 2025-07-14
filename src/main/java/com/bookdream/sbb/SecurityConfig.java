@@ -24,6 +24,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(new AntPathRequestMatcher("/api/upload/image")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
                 )
                 .csrf(csrf -> csrf
