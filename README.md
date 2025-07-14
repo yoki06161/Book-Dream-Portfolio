@@ -56,6 +56,9 @@
     - **생성자 주입**: `@Autowired` 필드 주입을 `@RequiredArgsConstructor`를 이용한 생성자 주입 방식으로 변경하여 의존성 결합도를 낮추고 순환 참조를 **방지했습니다.**
     - **체계적인 로깅**: `e.printStackTrace()`를 SLF4J 로거로 대체하여 예외 추적 시스템을 **구축했습니다.**
     - **방어적 프로그래밍**: 파일 저장 시 디렉토리 존재 여부를 미리 확인하고 생성하는 로직을 추가하여 `NoSuchFileException` 발생 가능성을 원천적으로 **차단했습니다.**
+- **Docker 기반 환경 표준화**: `Dockerfile`을 작성하여 애플리케이션 실행 환경을 **컨테이너화했습니다.**
+- **환경 분리를 위한 프로필 도입**: Spring Boot Profiles (`dev`, `prod`)를 도입하여 로컬 개발 환경과 도커 배포 환경의 설정을 완벽하게 **분리했습니다.**
+- **코드 유연성 확보**: 컨트롤러와 설정 파일에 하드코딩 되어 있던 파일 업로드 경로를 `@Value` 어노테이션을 사용해 프로필 설정 파일에서 주입받도록 리팩토링하여 코드의 유연성과 이식성을 크게 **향상시켰습니다.**
 
 #### 3. 문제 해결 및 디버깅
 - **Spring Security & Thymeleaf 렌더링 충돌 해결**: 익명 사용자의 CSRF 토큰 렌더링 과정에서 발생하던 `IllegalStateException`을 세션 생성 정책 변경(`SessionCreationPolicy.ALWAYS`)을 통해 **해결했습니다.**
@@ -65,29 +68,50 @@
 <br/>
 
 ## 🚀 실행 방법
+이 프로젝트는 **개발 모드**와 **배포 모드**로 실행 환경이 분리되어 있습니다.
 
-1. **레포지토리 클론**  
-   - 원격 저장소에서 프로젝트를 클론 받은 뒤, 프로젝트 디렉토리로 이동합니다.
+### 1. 개발 모드 (Local PC)
+> 코드를 수정하면서 즉시 변경사항을 확인하기 위한 가장 빠른 방법입니다.
 
-2. **MySQL DB 준비**  
-   - MySQL에서 DB를 생성: 예) `bookdream`  
-   - `src/main/resources/application.yml`(또는 `application.properties`) 파일에서  
-     - `spring.datasource.url=jdbc:mysql://localhost:3306/bookdream`  
-     - `spring.datasource.username=...`  
-     - `spring.datasource.password=...`  
-     를 환경에 맞게 수정
+**1) DB 준비 및 설정**
+- 로컬 PC에 MySQL을 설치하고, `bookdream` 스키마(데이터베이스)를 생성합니다.
+- `src/main/resources/application-dev.properties` 파일에 자신의 DB 계정 정보를 정확하게 입력합니다.
 
-3. **Gradle(또는 Maven) 빌드 & 실행**  
-   - 사용 중인 빌드 툴(Gradle/Maven)에 맞춰 빌드 및 서버 실행을 진행하세요.
+**2) IntelliJ 프로필 설정**
+- 인텔리제이 `실행 구성 편집...` > `옵션 수정` > `VM 옵션 추가` 로 이동합니다.
+- `VM 옵션` 입력란에 아래 내용을 추가합니다.
+  ```
+  -Dspring.profiles.active=dev
+  ```
+**3) 애플리케이션 실행**
+- IntelliJ의 실행(▶) 버튼을 눌러 애플리케이션을 시작합니다.
+- 웹 브라우저에서 `http://localhost:8080` 으로 접속하여 확인합니다.
 
-4. **브라우저 접속**  
-   - `http://localhost:8080/trade/list` 에서 책 목록을 확인  
-   - (회원 기능이 필요한 경우) `/user/login` 또는 `/user/signup`을 통해 로그인 후 이용  
-   - 로컬 PC 환경에 따라 포트나 경로를 수정해야 할 수도 있음
+### 2. 배포 모드 (Docker)
+> 개발이 완료된 최종 버전을 패키징하여 서버에 배포할 때 사용합니다.
 
-5. **이미지 저장 경로 설정(선택)**  
-   - 소스 상의 `uploadDir` 변수가 `C:/Users/TJ/git/Book-Dream/src/main/resources/static/image/` 로 되어 있습니다.  
-   - 실제 로컬 환경(Windows/Mac/Linux)에 맞게 수정해 주세요.
+**1) JAR 파일 빌드**
+- 프로젝트 최상위 폴더에서 아래 명령어로 실행 가능한 `.jar` 파일을 생성합니다.
+  ```bash
+  ./gradlew bootJar
+  ```
+
+**2) 도커 이미지 빌드**
+- 같은 위치에서 아래 명령어로 `Dockerfile`을 이용해 도커 이미지를 생성합니다.
+  ```bash
+  docker build -t bookdream-app .
+  ```
+
+**3) 도커 컨테이너 실행**
+- 아래 명령어로 이미지를 실행합니다.
+- **주의**: `[내 PC의 이미지 저장 경로]` 부분은 반드시 실제 경로로 변경해야 합니다.
+  ```bash
+  # 예시: -v C:\Users\MyUser\Desktop\images:/app/uploads
+  docker run -d -p 8080:8080 -v [내 PC의 이미지 저장 경로]:/app/uploads --name bookdream-container bookdream-app
+  ```
+
+**4) 접속**
+- 웹 브라우저에서 `http://localhost:8080` 으로 접속하여 애플리케이션을 확인합니다.
 
 <br/>
 
