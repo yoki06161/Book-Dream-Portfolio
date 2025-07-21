@@ -105,7 +105,6 @@ public class ChatController {
         @MessageMapping("/chat.sendMessage")
         @SendTo("/topic/public")
         public Chat sendMessage(Chat chatMessage, Principal principal) {
-
             // 서비스의 saveChat을 호출하여 '안 읽음' 카운트 등 모든 상태를 결정합니다.
             chatService.saveChat(chatMessage);
 

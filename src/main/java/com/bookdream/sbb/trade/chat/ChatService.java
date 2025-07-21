@@ -69,7 +69,7 @@ public class ChatService {
 
             // 현재 채팅방에 접속 중인 사용자 목록을 가져옵니다.
             Set<String> usersInRoom = activeUsers.get(chat.getChatRoomId());
-            boolean isRecipientActive = usersInRoom != null && usersInRoom.contains(recipientId);
+            boolean     isRecipientActive = usersInRoom != null && usersInRoom.contains(recipientId);
 
             // 상대방의 접속 상태에 따라 '안 읽음' 카운트를 설정합니다.
             if (isRecipientActive) {
@@ -99,14 +99,19 @@ public class ChatService {
             }
 
             chatRoomRepository.save(chatRoom);
-            messagingTemplate.convertAndSend("/topic/chatRoomsUpdate", chatRoom);
+
+            final int senderUnreadCount = getTotalNewMessagesCount(senderId);
+            final int recipientUnreadCount = getTotalNewMessagesCount(recipientId);
 
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                 @Override
                 public void afterCommit() {
-                    // 이 블록 안의 코드는 DB 저장이 완전히 완료된 후에 실행됩니다.
-                    sendNewMessagesCount(senderId);   // 메시지 보낸 사람의 배지 업데이트
-                    sendNewMessagesCount(recipientId); // 메시지 받는 사람의 배지 업데이트
+                    // 채팅방 목록 UI 업데이트 신호 전송
+                    messagingTemplate.convertAndSend("/topic/chatRoomsUpdate", chatRoom);
+
+                    // 각 사용자에게 최종 계산된 '안 읽음' 개수를 전송
+                    messagingTemplate.convertAndSendToUser(senderId, "/queue/newMessagesCount", senderUnreadCount);
+                    messagingTemplate.convertAndSendToUser(recipientId, "/queue/newMessagesCount", recipientUnreadCount);
                 }
             });
         });

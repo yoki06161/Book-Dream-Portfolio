@@ -37,27 +37,6 @@ public class ChatRoom {
     @Column(columnDefinition = "TEXT")
     private String lastMessage;  // 마지막 메시지 내용
 
-    public String getChatRoomName() {
-        return senderId + " & " + receiverId + " & " + tradeIdx;
-    }
-
-    public void incrementNewMessagesCount(String senderId) {
-        if (senderId.equals(this.senderId)) {
-            this.newMessagesCountForReceiver++;
-        } else {
-            this.newMessagesCountForSender++;
-        }
-        this.lastMessageSenderId = senderId;
-    }
-
-    public void resetNewMessagesCount(String userId) {
-        if (userId.equals(this.senderId)) {
-            this.newMessagesCountForReceiver = 0;
-        } else {
-            this.newMessagesCountForSender = 0;
-        }
-    }
-
     public int getNewMessagesCountForUser(String userId) {
         if (userId.equals(this.receiverId)) {
             return newMessagesCountForReceiver;
